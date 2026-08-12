@@ -15,6 +15,7 @@ class ToastController {
   ToastController({
     required this.overlayResolver,
     this.strings = const ToastStrings(),
+    this.stringsBuilder,
     this.logger,
     ToastHistory? history,
   }) : history = history ?? ToastHistory();
@@ -23,7 +24,23 @@ class ToastController {
   /// which is what you want when no route is mounted yet.
   final OverlayState? Function() overlayResolver;
 
+  /// Static strings, used when [stringsBuilder] is null.
   final ToastStrings strings;
+
+  /// Resolves strings against the toast's own [BuildContext], so they follow
+  /// the app's current locale.
+  ///
+  /// Prefer this over [strings] in a localised app: a controller is usually
+  /// created before `runApp`, where no localisations exist yet, and fixed
+  /// strings would then never update when the user changes language.
+  ///
+  /// ```dart
+  /// stringsBuilder: (context) {
+  ///   final l10n = AppLocalizations.of(context)!;
+  ///   return ToastStrings(error: l10n.toastTypeError, /* … */);
+  /// },
+  /// ```
+  final ToastStrings Function(BuildContext context)? stringsBuilder;
 
   /// Called for every toast shown. Use it to forward to your own logging.
   final ToastLogger? logger;
@@ -55,9 +72,9 @@ class ToastController {
 
     dismiss();
     final overlayEntry = OverlayEntry(
-      builder: (_) => ToastOverlayEntry(
+      builder: (context) => ToastOverlayEntry(
         config: effective,
-        strings: strings,
+        strings: stringsBuilder?.call(context) ?? strings,
         onDismissed: _remove,
       ),
     );
@@ -122,12 +139,14 @@ abstract final class Toast {
   static void init({
     required GlobalKey<NavigatorState> navigatorKey,
     ToastStrings strings = const ToastStrings(),
+    ToastStrings Function(BuildContext context)? stringsBuilder,
     ToastLogger? logger,
     ToastHistory? history,
   }) {
     _controller = ToastController(
       overlayResolver: () => navigatorKey.currentState?.overlay,
       strings: strings,
+      stringsBuilder: stringsBuilder,
       logger: logger,
       history: history,
     );

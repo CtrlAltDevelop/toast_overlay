@@ -8,6 +8,7 @@ import 'package:toast_overlay/toast_overlay.dart';
 Future<ToastController> _pumpApp(
   WidgetTester tester, {
   ToastStrings strings = const ToastStrings(),
+  ToastStrings Function(BuildContext)? stringsBuilder,
   ToastTheme? toastTheme,
   ToastLogger? logger,
 }) async {
@@ -27,6 +28,7 @@ Future<ToastController> _pumpApp(
   return ToastController(
     overlayResolver: () => navigatorKey.currentState?.overlay,
     strings: strings,
+    stringsBuilder: stringsBuilder,
     logger: logger,
   );
 }
@@ -64,6 +66,30 @@ void main() {
     await tester.pump();
 
     expect(find.text('Heads up'), findsOneWidget);
+
+    controller.dismiss();
+    await tester.pump();
+  });
+
+  testWidgets('stringsBuilder resolves against the toast context',
+      (tester) async {
+    final controller = await _pumpApp(
+      tester,
+      strings: const ToastStrings(warning: 'static'),
+      // Resolved per toast, so it follows a locale change instead of being
+      // frozen at controller-construction time.
+      stringsBuilder: (context) => ToastStrings(
+        warning: Directionality.of(context) == TextDirection.ltr
+            ? 'resolved'
+            : 'resolved-rtl',
+      ),
+    );
+
+    controller.show(const ToastConfig(status: ToastStatus.warning, title: ''));
+    await tester.pump();
+
+    expect(find.text('resolved'), findsOneWidget);
+    expect(find.text('static'), findsNothing);
 
     controller.dismiss();
     await tester.pump();

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+- Added `stringsBuilder`, which resolves `ToastStrings` against the toast's own
+  `BuildContext` instead of freezing them when the controller is created. A
+  controller is usually built before `runApp`, where no localisations exist, so
+  fixed strings could never follow a locale change. `strings` still works for
+  apps that do not localise.
+
 ## 0.1.0
 
 Initial release.
