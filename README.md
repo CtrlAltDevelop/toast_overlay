@@ -13,6 +13,19 @@ your app's theme, assets or localisations** — you inject those.
 flutter pub add toast_overlay
 ```
 
+Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
+
+```yaml
+dependencies:
+  toast_overlay: ^0.2.0
+```
+
+then:
+
+```bash
+flutter pub get
+```
+
 ## Use
 
 Initialise once with your root navigator key:
