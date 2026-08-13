@@ -54,10 +54,7 @@ class ToastContent extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: (theme.titleStyle ?? textTheme.bodyMedium)?.copyWith(
-                  color: theme.titleColor,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: theme.resolvedTitleStyle(textTheme),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -97,9 +94,7 @@ class ToastReferenceRow extends StatelessWidget {
         Flexible(
           child: Text(
             '${strings.referencePrefix}$referenceId',
-            style: (theme.subtitleStyle ?? textTheme.bodySmall)?.copyWith(
-              color: theme.subtitleColor,
-            ),
+            style: theme.resolvedReferenceStyle(textTheme),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -127,9 +122,7 @@ class ToastSubtitleText extends StatelessWidget {
 
     return Text(
       subtitle,
-      style: (theme.subtitleStyle ?? textTheme.bodySmall)?.copyWith(
-        color: theme.subtitleColor,
-      ),
+      style: theme.resolvedSubtitleStyle(textTheme),
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
     );
