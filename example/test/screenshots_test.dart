@@ -1,0 +1,113 @@
+// Renders the README screenshots from the real widgets, so they can be
+// regenerated whenever the toast changes:
+//
+//   cd example && flutter test --update-goldens test/screenshots_test.dart
+//
+// The image lands in ../../screenshots/ and is shown in README.md.
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:toast_overlay/toast_overlay.dart';
+import 'package:toast_overlay_example/example_toast_theme.dart';
+
+/// A card, laid out exactly as the overlay lays it out, on a plain backdrop.
+Widget _card(ToastConfig config) => ToastCard(
+      config: config,
+      strings: const ToastStrings(),
+      animation: const AlwaysStoppedAnimation(1),
+      onDismiss: _noop,
+    );
+
+void _noop() {}
+
+Widget _canvas(List<Widget> cards) => MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B5BFF)),
+        extensions: const [exampleToastTheme],
+      ),
+      home: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: cards,
+          ),
+        ),
+      ),
+    );
+
+/// Pumps [widget] and lets the glow images decode before the frame is captured.
+Future<void> _pumpAndSettleImages(WidgetTester tester, Widget widget) async {
+  await tester.pumpWidget(widget);
+  await tester.runAsync(() async {
+    for (final element in find.byType(Image).evaluate()) {
+      final image = element.widget as Image;
+      await precacheImage(image.image, element);
+    }
+  });
+  await tester.pumpAndSettle();
+}
+
+/// `flutter test` renders text with the placeholder Ahem font unless real
+/// fonts are registered, so load the ones the toast actually draws with: Roboto
+/// and Material Icons from the Flutter SDK, and Remix Icons from pub-cache.
+Future<void> _loadFonts() async {
+  final flutterRoot = Platform.environment['FLUTTER_ROOT'];
+  if (flutterRoot == null) return;
+  final materialFonts = '$flutterRoot/bin/cache/artifacts/material_fonts';
+
+  Future<void> load(String family, String path) async {
+    final file = File(path);
+    if (!file.existsSync()) return;
+    await (FontLoader(family)
+          ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer))))
+        .load();
+  }
+
+  await load('Roboto', '$materialFonts/Roboto-Regular.ttf');
+  await load('MaterialIcons', '$materialFonts/MaterialIcons-Regular.otf');
+
+  final remix = Directory('${Platform.environment['HOME']}'
+          '/.pub-cache/hosted/pub.dev')
+      .listSync()
+      .whereType<Directory>()
+      .where((d) => d.path.split('/').last.startsWith('remixicon-'))
+      .toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
+  if (remix.isNotEmpty) {
+    await load(
+        'packages/remixicon/remix', '${remix.last.path}/fonts/remix.ttf');
+  }
+}
+
+void main() {
+  setUpAll(_loadFonts);
+
+  testWidgets('a reference id, with its copy button', (tester) async {
+    tester.view
+      ..physicalSize = const Size(880, 340)
+      ..devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    await _pumpAndSettleImages(
+      tester,
+      _canvas([
+        _card(const ToastConfig(
+          status: ToastStatus.error,
+          title: 'Withdrawal failed',
+          subtitle: 'Please contact support.',
+          referenceId: 'REF-8F42-9001',
+          offset: 0,
+        )),
+      ]),
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('../../screenshots/reference_id.png'),
+    );
+  });
+}

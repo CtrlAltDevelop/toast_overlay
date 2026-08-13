@@ -1,39 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:toast_overlay/toast_overlay.dart';
 
+import 'example_toast_theme.dart';
+
 void main() => runApp(const ExampleApp());
 
 final _navigatorKey = GlobalKey<NavigatorState>();
-
-/// A brand palette, wired in as a [ToastTheme] extension.
-const _lightToastTheme = ToastTheme(
-  surface: Color(0xFFF7F8FA),
-  borderColor: Color(0xFFE5E7EB),
-  titleColor: Color(0xFF0A0C12),
-  subtitleColor: Color(0xFF6B7280),
-  closeIconColor: Color(0xFF9CA3AF),
-  statusColors: {
-    ToastStatus.error: ToastStatusColors(
-      background: Color(0xFFFEE4E2),
-      foreground: Color(0xFFF04438),
-    ),
-    ToastStatus.success: ToastStatusColors(
-      background: Color(0xFFD1FADF),
-      foreground: Color(0xFF12B76A),
-    ),
-    ToastStatus.info: ToastStatusColors(
-      background: Color(0xFFE4E9FF),
-      foreground: Color(0xFF3B5BFF),
-    ),
-    ToastStatus.warning: ToastStatusColors(
-      background: Color(0xFFFEF0C7),
-      foreground: Color(0xFFF79009),
-    ),
-  },
-  shadows: [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 16, offset: Offset(0, 4)),
-  ],
-);
 
 class ExampleApp extends StatelessWidget {
   const ExampleApp({super.key});
@@ -45,6 +17,9 @@ class ExampleApp extends StatelessWidget {
       navigatorKey: _navigatorKey,
       strings: const ToastStrings(),
       logger: debugPrintToast,
+      // Let up to three toasts stack against their edge; a fourth pushes the
+      // oldest one out. Leave it at 1 to replace instead.
+      maxStack: 3,
     );
 
     return MaterialApp(
@@ -52,7 +27,7 @@ class ExampleApp extends StatelessWidget {
       navigatorKey: _navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B5BFF)),
-        extensions: const [_lightToastTheme],
+        extensions: const [exampleToastTheme],
       ),
       home: const _HomePage(),
     );
@@ -61,6 +36,28 @@ class ExampleApp extends StatelessWidget {
 
 class _HomePage extends StatelessWidget {
   const _HomePage();
+
+  /// Shows three toasts in a row, which `maxStack: 3` keeps all on screen.
+  void _showStack() {
+    Toast.show(
+      status: ToastStatus.info,
+      title: 'Syncing your positions',
+      subtitle: 'This takes a moment on a slow connection.',
+      duration: const Duration(seconds: 6),
+    );
+    Toast.show(
+      status: ToastStatus.warning,
+      title: 'Low margin',
+      subtitle: 'Consider closing some positions.',
+      duration: const Duration(seconds: 6),
+    );
+    Toast.show(
+      status: ToastStatus.success,
+      title: 'Positions synced',
+      subtitle: 'Everything is up to date.',
+      duration: const Duration(seconds: 6),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,10 +102,15 @@ class _HomePage extends StatelessWidget {
               FilledButton(
                 onPressed: () => Toast.show(
                   status: ToastStatus.info,
-                  title: '',
-                  subtitle: 'Empty title falls back to the status default.',
+                  title: 'Market opens in 5 minutes',
+                  subtitle: 'Orders placed now are queued until the open.',
                 ),
-                child: const Text('Info, default title'),
+                child: const Text('Info'),
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _showStack,
+                child: const Text('Three at once, stacked'),
               ),
             ],
           ),
