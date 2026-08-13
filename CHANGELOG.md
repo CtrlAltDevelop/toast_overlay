@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+- Toasts can stack. `Toast.init(maxStack: 3)` (or `ToastController(maxStack:)`)
+  keeps several toasts against their edge instead of replacing; the oldest one
+  drops off past the limit, and `stackSpacing` sets the gap. The default of 1
+  keeps the previous replace-on-show behaviour.
+- `ToastTheme.cardRadius` and `ToastTheme.iconRadius` set the corner radii as a
+  `BorderRadius`, without having to build a whole `ShapeBorder`. `cardShape` /
+  `iconShape` still win when set.
+- `ToastTheme.fontFamily` swaps the typeface for every line, and
+  `referenceStyle` styles the `Ref: <id>` line on its own.
+- `titleStyle` and `subtitleStyle` are now respected in full: a `fontWeight`,
+  `color` or `fontFamily` they set is no longer overwritten by the theme's
+  defaults.
+- README screenshots are generated from the real widgets by
+  `example/test/screenshots_test.dart`.
+
 ## 0.2.0
 
 - Added `stringsBuilder`, which resolves `ToastStrings` against the toast's own

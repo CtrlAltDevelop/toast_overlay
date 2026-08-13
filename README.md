@@ -7,6 +7,18 @@ Unlike a `SnackBar`, it renders into the root `Overlay`, so it shows above
 dialogs and bottom sheets and survives route changes. It has **no dependency on
 your app's theme, assets or localisations** — you inject those.
 
+Three toasts stacked at the top:
+
+![Three stacked toasts](screenshots/stacked.png)
+
+One anchored to the bottom:
+
+![A toast anchored to the bottom](screenshots/bottom.png)
+
+And one carrying a support reference id, with its copy button:
+
+![An error toast with a reference id](screenshots/reference_id.png)
+
 ## Install
 
 ```bash
@@ -17,7 +29,7 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ^0.2.0
+  toast_overlay: ^0.3.0
 ```
 
 then:
@@ -57,6 +69,22 @@ Toast.show(
 | `position` | `top` | `top` or `bottom` |
 | `offset` | `kToolbarHeight` | Distance from the anchored edge |
 | `duration` | 3s | `null` keeps it up until dismissed |
+
+## Stacking
+
+By default each toast replaces the one on screen. Raise `maxStack` and they
+stack against their edge instead — the oldest drops off once the limit is hit:
+
+```dart
+Toast.init(
+  navigatorKey: navigatorKey,
+  maxStack: 3,      // 1 (the default) replaces instead of stacking
+  stackSpacing: 8,  // gap between two cards
+);
+```
+
+Top-anchored and bottom-anchored toasts stack separately, each against its own
+edge, and only the card nearest the edge keeps its `offset`.
 
 ## Reference ids
 
@@ -100,16 +128,56 @@ MaterialApp(
 **If you register nothing, it still works** — the palette is derived from the
 ambient `ColorScheme`.
 
-`ToastTheme` also carries `titleStyle`, `subtitleStyle`, `shadows`, `cardShape`,
-`iconShape`, `icons`, and a `glowBuilder` for painting a decorative backdrop
-behind the card:
+### Corners
+
+`cardRadius` and `iconRadius` are `BorderRadius`, so corners can differ — 12 and
+6 all round by default:
+
+```dart
+ToastTheme(
+  // …
+  cardRadius: BorderRadius.circular(20),
+  iconRadius: const BorderRadius.only(
+    topLeft: Radius.circular(16),
+    bottomRight: Radius.circular(16),
+  ),
+);
+```
+
+Pass `cardShape` or `iconShape` instead when you want a shape of your own; they
+override the radii.
+
+### Type
+
+`fontFamily` swaps the typeface on every line. For finer control, `titleStyle`,
+`subtitleStyle` and `referenceStyle` are used exactly as given — a weight,
+colour or family you set there is never overwritten:
+
+```dart
+ToastTheme(
+  // …
+  fontFamily: 'Inter',
+  titleStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+  subtitleStyle: TextStyle(fontSize: 13, height: 1.3),
+  referenceStyle: TextStyle(fontSize: 12, letterSpacing: 0.4),
+);
+```
+
+### Everything else
+
+`ToastTheme` also carries `shadows`, `icons`, and a `glowBuilder` for painting a
+decorative backdrop behind the card:
 
 ```dart
 glowBuilder: (context, status) => Image.asset(
-  'assets/patterns/${status.shortName}_glow.png',
+  'assets/${status.shortName}_glow.webp',
   fit: BoxFit.fitWidth,
+  alignment: Alignment.centerRight,
 ),
 ```
+
+The glows in the screenshots above ship with the example, not the package — see
+`example/assets/` and `example/lib/example_toast_theme.dart`.
 
 ## Localisation
 
@@ -171,7 +239,8 @@ for (final entry in Toast.history.entries) {
 
 ## Behaviour notes
 
-- Showing a toast replaces any toast already on screen.
+- Showing a toast replaces any toast already on screen, unless `maxStack` is
+  above 1.
 - The countdown ring is only drawn while a toast is auto-dismissing.
 - The card is wrapped in a `RepaintBoundary` and passed as the `child` of its
   `AnimatedBuilder`, so the animation does not rebuild the content.

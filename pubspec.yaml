@@ -2,9 +2,11 @@ name: toast_overlay
 description: >-
   An animated, themeable overlay toast for Flutter with an auto-dismiss
   countdown ring and an optional copyable support reference id.
-version: 0.2.0
+version: 0.3.0
+homepage: https://github.com/CtrlAltDevelop
 repository: https://github.com/CtrlAltDevelop/toast_overlay
 issue_tracker: https://github.com/CtrlAltDevelop/toast_overlay/issues
+publish_to: https://pub.dev
 
 topics:
   - toast
@@ -23,6 +25,12 @@ dependencies:
   remixicon: ^4.9.3
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+screenshots:
+  - description: >-
+      The four toast statuses — error, warning, info and success — each with its
+      status colour, icon and decorative glow.
+    path: screenshots/alert.png
