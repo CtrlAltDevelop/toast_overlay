@@ -39,14 +39,18 @@ class ToastConfig {
   /// Whether the timer ring around the close button should be drawn.
   bool get isAutoDismissing => duration != null;
 
-  ToastConfig copyWith({Duration? duration, bool clearDuration = false}) =>
+  ToastConfig copyWith({
+    Duration? duration,
+    bool clearDuration = false,
+    double? offset,
+  }) =>
       ToastConfig(
         status: status,
         title: title,
         position: position,
         subtitle: subtitle,
         referenceId: referenceId,
-        offset: offset,
+        offset: offset ?? this.offset,
         duration: clearDuration ? null : (duration ?? this.duration),
       );
 

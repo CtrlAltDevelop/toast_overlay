@@ -25,4 +25,5 @@ export 'src/widgets/toast_content.dart';
 export 'src/widgets/toast_copy_button.dart';
 export 'src/widgets/toast_leading_icon.dart';
 export 'src/widgets/toast_overlay_entry.dart';
+export 'src/widgets/toast_stack.dart';
 export 'src/widgets/toast_timer_progress.dart';

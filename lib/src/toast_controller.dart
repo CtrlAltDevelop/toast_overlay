@@ -5,7 +5,7 @@ import 'toast_config.dart';
 import 'toast_enums.dart';
 import 'toast_history.dart';
 import 'toast_strings.dart';
-import 'widgets/toast_overlay_entry.dart';
+import 'widgets/toast_stack.dart';
 
 /// Shows toasts in an [Overlay].
 ///
@@ -17,8 +17,11 @@ class ToastController {
     this.strings = const ToastStrings(),
     this.stringsBuilder,
     this.logger,
+    this.maxStack = 1,
+    this.stackSpacing = 8,
     ToastHistory? history,
-  }) : history = history ?? ToastHistory();
+  })  : assert(maxStack >= 1, 'maxStack must be at least 1'),
+        history = history ?? ToastHistory();
 
   /// Resolves the overlay to insert into. Returning null makes [show] a no-op,
   /// which is what you want when no route is mounted yet.
@@ -45,15 +48,34 @@ class ToastController {
   /// Called for every toast shown. Use it to forward to your own logging.
   final ToastLogger? logger;
 
+  /// How many toasts may share the screen.
+  ///
+  /// The default of 1 replaces the toast on screen with each new one. Raise it
+  /// and the toasts stack against their edge instead — a third toast with
+  /// `maxStack: 2` pushes the oldest one out.
+  final int maxStack;
+
+  /// Gap between two stacked cards. Unused when [maxStack] is 1.
+  final double stackSpacing;
+
   /// The most recent toasts, for a debug screen.
   final ToastHistory history;
 
   OverlayEntry? _entry;
+  final List<StackedToast> _stack = [];
+  int _nextId = 0;
 
   /// Whether a toast is currently on screen.
   bool get isShowing => _entry != null;
 
-  /// Shows [config], replacing any toast already on screen.
+  /// How many toasts are on screen. Never more than [maxStack].
+  int get visibleCount => _stack.length;
+
+  /// Shows [config].
+  ///
+  /// With the default [maxStack] of 1 this replaces the toast on screen;
+  /// otherwise the toast joins the stack and the oldest one is dropped once
+  /// [maxStack] is exceeded.
   ///
   /// A toast carrying a reference id never auto-dismisses: the user needs time
   /// to copy it, so only the close button removes it.
@@ -70,16 +92,37 @@ class ToastController {
     final overlay = overlayResolver();
     if (overlay == null) return;
 
-    dismiss();
-    final overlayEntry = OverlayEntry(
-      builder: (context) => ToastOverlayEntry(
-        config: effective,
-        strings: stringsBuilder?.call(context) ?? strings,
-        onDismissed: _remove,
-      ),
-    );
-    _entry = overlayEntry;
-    overlay.insert(overlayEntry);
+    if (maxStack == 1) _stack.clear();
+    _stack.add(StackedToast(id: _nextId++, config: effective));
+    // Oldest first, so anything over the limit falls off the front.
+    if (_stack.length > maxStack) {
+      _stack.removeRange(0, _stack.length - maxStack);
+    }
+
+    final overlayEntry = _entry;
+    if (overlayEntry == null) {
+      final created = OverlayEntry(builder: _buildStack);
+      _entry = created;
+      overlay.insert(created);
+    } else {
+      overlayEntry.markNeedsBuild();
+    }
+  }
+
+  Widget _buildStack(BuildContext context) => ToastStack(
+        toasts: List.unmodifiable(_stack),
+        spacing: stackSpacing,
+        strings: (context) => stringsBuilder?.call(context) ?? strings,
+        onDismissed: _removeById,
+      );
+
+  void _removeById(Object id) {
+    _stack.removeWhere((toast) => toast.id == id);
+    if (_stack.isEmpty) {
+      _remove();
+    } else {
+      _entry?.markNeedsBuild();
+    }
   }
 
   /// Convenience wrapper around [show].
@@ -104,10 +147,11 @@ class ToastController {
         ),
       );
 
-  /// Removes the current toast immediately, without the exit animation.
+  /// Removes every toast on screen immediately, without the exit animation.
   void dismiss() => _remove();
 
   void _remove() {
+    _stack.clear();
     _entry?.remove();
     _entry = null;
   }
@@ -141,6 +185,8 @@ abstract final class Toast {
     ToastStrings strings = const ToastStrings(),
     ToastStrings Function(BuildContext context)? stringsBuilder,
     ToastLogger? logger,
+    int maxStack = 1,
+    double stackSpacing = 8,
     ToastHistory? history,
   }) {
     _controller = ToastController(
@@ -148,6 +194,8 @@ abstract final class Toast {
       strings: strings,
       stringsBuilder: stringsBuilder,
       logger: logger,
+      maxStack: maxStack,
+      stackSpacing: stackSpacing,
       history: history,
     );
   }

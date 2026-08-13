@@ -12,10 +12,25 @@ class ToastOverlayEntry extends StatefulWidget {
     required this.strings,
     required this.onDismissed,
     this.transitionDuration = const Duration(milliseconds: 300),
+    this.anchored = true,
   });
+
+  /// A toast that is laid out by a [ToastStack] instead of anchoring itself to
+  /// a screen edge.
+  const ToastOverlayEntry.stacked({
+    super.key,
+    required this.config,
+    required this.strings,
+    required this.onDismissed,
+    this.transitionDuration = const Duration(milliseconds: 300),
+  }) : anchored = false;
 
   final ToastConfig config;
   final ToastStrings strings;
+
+  /// Whether this entry positions itself against the screen edge. False when a
+  /// [ToastStack] owns the layout.
+  final bool anchored;
 
   /// Called once the exit animation has finished.
   final VoidCallback onDismissed;
@@ -72,6 +87,21 @@ class _ToastOverlayEntryState extends State<ToastOverlayEntry>
   @override
   Widget build(BuildContext context) {
     final isTop = widget.config.position.isTop;
+
+    final card = RepaintBoundary(
+      child: ToastCard(
+        config: widget.config,
+        strings: widget.strings,
+        animation: _show.view,
+        timerAnimation: _timer?.view,
+        onDismiss: _dismiss,
+      ),
+    );
+
+    // Inside a stack the host already supplies the Material and the SafeArea,
+    // and lays the cards out in a column.
+    if (!widget.anchored) return card;
+
     return Positioned(
       top: isTop ? 0 : null,
       bottom: isTop ? null : 0,
@@ -82,15 +112,7 @@ class _ToastOverlayEntryState extends State<ToastOverlayEntry>
         child: SafeArea(
           top: isTop,
           bottom: !isTop,
-          child: RepaintBoundary(
-            child: ToastCard(
-              config: widget.config,
-              strings: widget.strings,
-              animation: _show.view,
-              timerAnimation: _timer?.view,
-              onDismiss: _dismiss,
-            ),
-          ),
+          child: card,
         ),
       ),
     );
