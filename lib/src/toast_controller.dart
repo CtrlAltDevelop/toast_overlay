@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show kToolbarHeight;
+import 'package:material_ui/material_ui.dart' show kToolbarHeight;
 import 'package:flutter/widgets.dart';
 
 import 'toast_config.dart';

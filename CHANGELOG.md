@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.0.0
+
+Breaking. Read the first item before upgrading.
+
+- **Moved to `package:material_ui`.** Material has been decoupled from the
+  Flutter framework into its own package, and the toast now builds on it
+  instead of `package:flutter/material.dart`.
+
+  This is breaking because the two libraries declare *separate* types. The
+  `ThemeExtension`, `ThemeData` and `ColorScheme` this package uses are
+  `material_ui`'s, so an app still importing `package:flutter/material.dart`
+  cannot register `ToastTheme` in its `ThemeData` — the types will not match.
+
+  To upgrade, migrate your app the same way:
+
+  ```sh
+  dart fix --apply --code=migrate_design_widgets
+  ```
+
+  If you cannot migrate yet, stay on 0.3.0. Flutter's
+  `MaterialUiCompatibilityBridge` can bridge a mixed tree, but it ships
+  already deprecated and is not a long-term answer.
+
+- Requires Dart 3.13 and Flutter 3.47.
+
+- Dropped both previous third-party dependencies.
+  - `figma_squircle` is gone. The squircle corners now come from the
+    framework's own `RoundedSuperellipseBorder`. The corner curve is very
+    slightly different from `SmoothRectangleBorder`; nothing else about the
+    shapes changed. Passing your own `cardShape` / `iconShape` still wins,
+    including a `SmoothRectangleBorder` if you depend on `figma_squircle`
+    yourself.
+  - `remixicon` is gone. `ToastIcons` now defaults to Material Icons. Set
+    `ToastTheme.icons` to keep the Remix glyphs — `example/` shows this.
+
+- The example's iOS deployment target is now 15.0, the minimum Flutter 3.47
+  supports.
+
 ## 0.3.0
 
 - Toasts can stack. `Toast.init(maxStack: 3)` (or `ToastController(maxStack:)`)

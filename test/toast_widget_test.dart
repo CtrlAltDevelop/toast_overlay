@@ -1,5 +1,4 @@
-import 'package:figma_squircle/figma_squircle.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:toast_overlay/toast_overlay.dart';
@@ -313,11 +312,11 @@ void main() {
         iconRadius: BorderRadius.all(Radius.circular(18)),
       );
 
-      expect(theme.resolvedCardShape, isA<SmoothRectangleBorder>());
-      final card = theme.resolvedCardShape as SmoothRectangleBorder;
+      expect(theme.resolvedCardShape, isA<RoundedSuperellipseBorder>());
+      final card = theme.resolvedCardShape as RoundedSuperellipseBorder;
       expect(card.borderRadius.resolve(TextDirection.ltr).topLeft.x, 24);
 
-      final icon = theme.resolvedIconShape as SmoothRectangleBorder;
+      final icon = theme.resolvedIconShape as RoundedSuperellipseBorder;
       expect(icon.borderRadius.resolve(TextDirection.ltr).topLeft.x, 18);
 
       // An explicit shape still wins.

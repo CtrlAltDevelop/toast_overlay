@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:toast_overlay/toast_overlay.dart';
 
 import 'example_toast_theme.dart';

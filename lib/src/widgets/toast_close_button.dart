@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../toast_theme.dart';
 import 'toast_timer_progress.dart';

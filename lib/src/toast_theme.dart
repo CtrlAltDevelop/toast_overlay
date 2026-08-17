@@ -1,6 +1,4 @@
-import 'package:figma_squircle/figma_squircle.dart';
-import 'package:flutter/material.dart';
-import 'package:remixicon/remixicon.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'toast_enums.dart';
 
@@ -105,27 +103,13 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
 
   ShapeBorder get resolvedCardShape =>
       cardShape ??
-      SmoothRectangleBorder(
+      RoundedSuperellipseBorder(
         side: BorderSide(width: 1, color: borderColor),
-        borderRadius: _smooth(cardRadius),
+        borderRadius: cardRadius,
       );
 
   ShapeBorder get resolvedIconShape =>
-      iconShape ?? SmoothRectangleBorder(borderRadius: _smooth(iconRadius));
-
-  /// Squircles the corners of [radius], which is what gives the card its
-  /// smoothed, non-circular corners.
-  static SmoothBorderRadius _smooth(BorderRadius radius) =>
-      SmoothBorderRadius.only(
-        topLeft:
-            SmoothRadius(cornerRadius: radius.topLeft.x, cornerSmoothing: 1),
-        topRight:
-            SmoothRadius(cornerRadius: radius.topRight.x, cornerSmoothing: 1),
-        bottomLeft:
-            SmoothRadius(cornerRadius: radius.bottomLeft.x, cornerSmoothing: 1),
-        bottomRight: SmoothRadius(
-            cornerRadius: radius.bottomRight.x, cornerSmoothing: 1),
-      );
+      iconShape ?? RoundedSuperellipseBorder(borderRadius: iconRadius);
 
   /// The title style, with this theme's colour, weight and family filled in
   /// wherever [titleStyle] leaves them unset.
@@ -274,13 +258,13 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
 @immutable
 class ToastIcons {
   const ToastIcons({
-    this.error = Remix.error_warning_fill,
-    this.success = Remix.checkbox_circle_fill,
-    this.info = Remix.information_fill,
-    this.warning = Remix.alert_fill,
-    this.close = Remix.close_line,
-    this.copy = Remix.file_copy_line,
-    this.copied = Remix.check_line,
+    this.error = Icons.error,
+    this.success = Icons.check_circle,
+    this.info = Icons.info,
+    this.warning = Icons.warning,
+    this.close = Icons.close,
+    this.copy = Icons.content_copy,
+    this.copied = Icons.check,
   });
 
   final IconData error;

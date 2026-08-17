@@ -2,7 +2,7 @@ name: toast_overlay
 description: >-
   An animated, themeable overlay toast for Flutter with an auto-dismiss
   countdown ring and an optional copyable support reference id.
-version: 0.3.0
+version: 1.0.0
 homepage: https://github.com/CtrlAltDevelop
 repository: https://github.com/CtrlAltDevelop/toast_overlay
 issue_tracker: https://github.com/CtrlAltDevelop/toast_overlay/issues
@@ -14,14 +14,13 @@ topics:
   - overlay
 
 environment:
-  sdk: ^3.6.0
-  flutter: ">=3.27.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  figma_squircle: ^0.6.3
-  remixicon: ^4.9.3
+  material_ui: ^1.0.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0

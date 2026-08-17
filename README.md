@@ -29,7 +29,7 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ^0.3.0
+  toast_overlay: ^1.0.0
 ```
 
 then:
@@ -37,6 +37,24 @@ then:
 ```bash
 flutter pub get
 ```
+
+### Requires `package:material_ui`
+
+Since 1.0.0 this package builds on [`material_ui`][material_ui], the standalone
+Material library, rather than `package:flutter/material.dart`. The two declare
+separate types, so your app has to be on `material_ui` as well — otherwise
+`ToastTheme` cannot be registered in your `ThemeData`.
+
+If your app still imports `package:flutter/material.dart`, migrate it with
+Flutter's own fix:
+
+```bash
+dart fix --apply --code=migrate_design_widgets
+```
+
+Staying on `package:flutter/material.dart` for now? Use `toast_overlay: ^0.3.0`.
+
+[material_ui]: https://pub.dev/packages/material_ui
 
 ## Use
 
