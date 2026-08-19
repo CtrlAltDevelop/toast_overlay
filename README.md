@@ -11,10 +11,6 @@ your app's theme, assets or localisations** — you inject those.
 | --- | --- | --- |
 | ![Three stacked toasts](screenshots/stacked.png) | ![A toast anchored to the bottom](screenshots/bottom.png) | ![An error toast with a subtitle and a reference id](screenshots/subtitle_and_reference.png) |
 
-One card per status:
-
-![A toast in each of the four statuses](screenshots/alert.png)
-
 ## Install
 
 ```bash

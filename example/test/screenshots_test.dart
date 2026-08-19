@@ -111,40 +111,6 @@ Future<void> _shot(
 void main() {
   setUpAll(_loadFonts);
 
-  testWidgets('one card per status', (tester) async {
-    await _shot(
-      tester,
-      'alert',
-      const Size(440, 320),
-      _canvas([
-        _card(const ToastConfig(
-          status: ToastStatus.error,
-          title: 'Invalid username or password',
-          subtitle: 'The username or password you entered is incorrect.',
-          offset: 0,
-        )),
-        _card(const ToastConfig(
-          status: ToastStatus.warning,
-          title: 'Low margin',
-          subtitle: 'Consider closing some positions.',
-          offset: 0,
-        )),
-        _card(const ToastConfig(
-          status: ToastStatus.info,
-          title: 'Market opens in 5 minutes',
-          subtitle: 'Orders placed now are queued until the open.',
-          offset: 0,
-        )),
-        _card(const ToastConfig(
-          status: ToastStatus.success,
-          title: 'Order placed',
-          subtitle: 'Your position is now open.',
-          offset: 0,
-        )),
-      ]),
-    );
-  });
-
   testWidgets('three toasts stacked against the top edge', (tester) async {
     await _shot(
       tester,
