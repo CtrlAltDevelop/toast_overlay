@@ -7,21 +7,13 @@ Unlike a `SnackBar`, it renders into the root `Overlay`, so it shows above
 dialogs and bottom sheets and survives route changes. It has **no dependency on
 your app's theme, assets or localisations** — you inject those.
 
-Three toasts stacked at the top:
+| Three stacked at the top | One anchored to the bottom | A reference id, with a subtitle above it |
+| --- | --- | --- |
+| ![Three stacked toasts](screenshots/stacked.png) | ![A toast anchored to the bottom](screenshots/bottom.png) | ![An error toast with a subtitle and a reference id](screenshots/subtitle_and_reference.png) |
 
-![Three stacked toasts](screenshots/stacked.png)
+One card per status:
 
-One anchored to the bottom:
-
-![A toast anchored to the bottom](screenshots/bottom.png)
-
-And one carrying a support reference id, with its copy button:
-
-![An error toast with a reference id](screenshots/reference_id.png)
-
-A subtitle and a reference id sit together, title on top:
-
-![An error toast with a subtitle and a reference id](screenshots/subtitle_and_reference.png)
+![A toast in each of the four statuses](screenshots/alert.png)
 
 ## Install
 
@@ -123,6 +115,8 @@ Toast.show(
 );
 ```
 
+![An error toast with a reference id](screenshots/reference_id.png)
+
 ## Theming
 
 Register a `ToastTheme` extension and the toast follows your light and dark
@@ -191,15 +185,22 @@ ToastTheme(
 decorative backdrop behind the card:
 
 ```dart
-glowBuilder: (context, status) => Image.asset(
-  'assets/${status.shortName}_glow.webp',
-  fit: BoxFit.fitWidth,
-  alignment: Alignment.centerRight,
+glowBuilder: (context, status) => DecoratedBox(
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      stops: const [0.08, 0.85],
+      colors: [tint.withValues(alpha: 0), tint.withValues(alpha: 0.09)],
+    ),
+  ),
 ),
 ```
 
-The glows in the screenshots above ship with the example, not the package — see
-`example/assets/` and `example/lib/example_toast_theme.dart`.
+Return whatever you like — an `Image.asset` works too, but a gradient costs no
+decode, no texture upload and no image cache, which is worth having on a layer
+that is purely decorative. The glows in the screenshots above ship with the
+example, not the package — see `example/lib/example_toast_theme.dart`.
 
 ## Localisation
 

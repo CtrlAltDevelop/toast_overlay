@@ -22,7 +22,12 @@ Widget _card(ToastConfig config) => ToastCard(
 
 void _noop() {}
 
-Widget _canvas(List<Widget> cards) => MaterialApp(
+Widget _canvas(
+  List<Widget> cards, {
+  Alignment alignment = Alignment.center,
+  double spacing = 8,
+}) =>
+    MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B5BFF)),
@@ -30,24 +35,23 @@ Widget _canvas(List<Widget> cards) => MaterialApp(
       ),
       home: Scaffold(
         backgroundColor: const Color(0xFFFFFFFF),
-        body: Center(
+        body: Align(
+          alignment: alignment,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: cards,
+            children: [
+              for (var i = 0; i < cards.length; i++) ...[
+                if (i > 0) SizedBox(height: spacing),
+                cards[i],
+              ],
+            ],
           ),
         ),
       ),
     );
 
-/// Pumps [widget] and lets the glow images decode before the frame is captured.
-Future<void> _pumpAndSettleImages(WidgetTester tester, Widget widget) async {
+Future<void> _pump(WidgetTester tester, Widget widget) async {
   await tester.pumpWidget(widget);
-  await tester.runAsync(() async {
-    for (final element in find.byType(Image).evaluate()) {
-      final image = element.widget as Image;
-      await precacheImage(image.image, element);
-    }
-  });
   await tester.pumpAndSettle();
 }
 
@@ -83,17 +87,122 @@ Future<void> _loadFonts() async {
   }
 }
 
+/// Renders [widget] at [size] logical pixels and writes it to
+/// `screenshots/<name>.png`.
+Future<void> _shot(
+  WidgetTester tester,
+  String name,
+  Size size,
+  Widget widget,
+) async {
+  tester.view
+    ..physicalSize = size * 2
+    ..devicePixelRatio = 2;
+  addTearDown(tester.view.reset);
+
+  await _pump(tester, widget);
+
+  await expectLater(
+    find.byType(MaterialApp),
+    matchesGoldenFile('../../screenshots/$name.png'),
+  );
+}
+
 void main() {
   setUpAll(_loadFonts);
 
-  testWidgets('a reference id, with its copy button', (tester) async {
-    tester.view
-      ..physicalSize = const Size(880, 340)
-      ..devicePixelRatio = 2;
-    addTearDown(tester.view.reset);
-
-    await _pumpAndSettleImages(
+  testWidgets('one card per status', (tester) async {
+    await _shot(
       tester,
+      'alert',
+      const Size(440, 320),
+      _canvas([
+        _card(const ToastConfig(
+          status: ToastStatus.error,
+          title: 'Invalid username or password',
+          subtitle: 'The username or password you entered is incorrect.',
+          offset: 0,
+        )),
+        _card(const ToastConfig(
+          status: ToastStatus.warning,
+          title: 'Low margin',
+          subtitle: 'Consider closing some positions.',
+          offset: 0,
+        )),
+        _card(const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Market opens in 5 minutes',
+          subtitle: 'Orders placed now are queued until the open.',
+          offset: 0,
+        )),
+        _card(const ToastConfig(
+          status: ToastStatus.success,
+          title: 'Order placed',
+          subtitle: 'Your position is now open.',
+          offset: 0,
+        )),
+      ]),
+    );
+  });
+
+  testWidgets('three toasts stacked against the top edge', (tester) async {
+    await _shot(
+      tester,
+      'stacked',
+      const Size(440, 250),
+      _canvas(
+        alignment: Alignment.topCenter,
+        [
+          // Only the card nearest the edge keeps its offset, exactly as
+          // ToastStack lays them out.
+          _card(const ToastConfig(
+            status: ToastStatus.info,
+            title: 'Syncing your positions',
+            subtitle: 'This takes a moment on a slow connection.',
+            offset: 24,
+          )),
+          _card(const ToastConfig(
+            status: ToastStatus.warning,
+            title: 'Low margin',
+            subtitle: 'Consider closing some positions.',
+            offset: 0,
+          )),
+          _card(const ToastConfig(
+            status: ToastStatus.success,
+            title: 'Positions synced',
+            subtitle: 'Everything is up to date.',
+            offset: 0,
+          )),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('a toast anchored to the bottom edge', (tester) async {
+    await _shot(
+      tester,
+      'bottom',
+      const Size(440, 160),
+      _canvas(
+        alignment: Alignment.bottomCenter,
+        [
+          _card(const ToastConfig(
+            status: ToastStatus.warning,
+            title: 'Low margin',
+            subtitle: 'Consider closing some positions.',
+            position: ToastPosition.bottom,
+            offset: 24,
+          )),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('a reference id, with its copy button', (tester) async {
+    await _shot(
+      tester,
+      'reference_id',
+      const Size(440, 130),
       _canvas([
         _card(const ToastConfig(
           status: ToastStatus.error,
@@ -103,21 +212,13 @@ void main() {
         )),
       ]),
     );
-
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('../../screenshots/reference_id.png'),
-    );
   });
 
   testWidgets('a title, a subtitle and a reference id', (tester) async {
-    tester.view
-      ..physicalSize = const Size(880, 380)
-      ..devicePixelRatio = 2;
-    addTearDown(tester.view.reset);
-
-    await _pumpAndSettleImages(
+    await _shot(
       tester,
+      'subtitle_and_reference',
+      const Size(440, 130),
       _canvas([
         _card(const ToastConfig(
           status: ToastStatus.error,
@@ -128,11 +229,6 @@ void main() {
           offset: 0,
         )),
       ]),
-    );
-
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('../../screenshots/subtitle_and_reference.png'),
     );
   });
 }

@@ -63,9 +63,31 @@ const exampleToastTheme = ToastTheme(
   glowBuilder: statusGlow,
 );
 
-/// A decorative backdrop painted behind the card, one image per status.
-Widget statusGlow(BuildContext context, ToastStatus status) => Image.asset(
-      'assets/${status.shortName}_glow.webp',
-      fit: BoxFit.fitWidth,
-      alignment: Alignment.centerRight,
-    );
+/// A decorative backdrop painted behind the card: the status hue, fading in
+/// from the left and flattening out towards the right edge.
+///
+/// This used to be one WebP per status. A gradient draws the same thing on the
+/// GPU with nothing to decode, upload or keep in the image cache — worth it for
+/// a purely decorative layer that every toast paints.
+Widget statusGlow(BuildContext context, ToastStatus status) {
+  final tint = _glowTints[status]!;
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        stops: const [0.08, 0.85],
+        colors: [tint.withValues(alpha: 0), tint.withValues(alpha: 0.09)],
+      ),
+    ),
+  );
+}
+
+/// Deeper than the icon colours: at 9% alpha they need the extra saturation to
+/// register against the card surface.
+const _glowTints = {
+  ToastStatus.error: Color(0xFFE32117),
+  ToastStatus.success: Color(0xFF0C924C),
+  ToastStatus.info: Color(0xFF1E3AEE),
+  ToastStatus.warning: Color(0xFFC8990D),
+};
