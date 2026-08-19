@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../toast_config.dart';
 import '../toast_strings.dart';
 import '../toast_theme.dart';
+import 'toast_close_button.dart';
 import 'toast_content.dart';
 import 'toast_leading_icon.dart';
 
@@ -52,21 +53,28 @@ class ToastCard extends StatelessWidget {
               Positioned.fill(
                   child: theme.glowBuilder!(context, config.status)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              // The right inset keeps the text clear of the close button, which
+              // is laid out on top of the card rather than in this row.
+              padding: const EdgeInsets.fromLTRB(10, 10, 38, 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ToastLeadingIcon(status: config.status),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: ToastContent(
-                      config: config,
-                      strings: strings,
-                      timerAnimation: timerAnimation,
-                      onDismiss: onDismiss,
-                    ),
+                    child: ToastContent(config: config, strings: strings),
                   ),
                 ],
+              ),
+            ),
+            // Overlaid, so its 48dp tap target costs the card no height.
+            Positioned(
+              top: 0,
+              right: 0,
+              child: ToastCloseButton(
+                timerAnimation: timerAnimation,
+                onDismiss: onDismiss,
+                semanticsLabel: strings.closeLabel,
               ),
             ),
           ],

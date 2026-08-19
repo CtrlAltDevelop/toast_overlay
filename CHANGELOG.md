@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0
+
+- An error toast with both a `subtitle` and a `referenceId` now shows both,
+  the `Ref:` line under the subtitle. Previously the reference id replaced the
+  subtitle.
+
+- The card is more compact. The dismiss button is now laid out on top of the
+  card instead of in the title row, so its 48dp tap target no longer stretches
+  the toast; the copy button, the leading icon tile and the paddings shrank to
+  match, and the icon tile lost its drop shadow. A toast with a reference id is
+  about half its previous height.
+
+  Breaking for anyone building `ToastContent` directly: it no longer draws the
+  close button, and its `onDismiss` and `timerAnimation` parameters are gone.
+  `ToastCard` is unchanged.
+
 ## 1.0.0
 
 Breaking. Read the first item before upgrading.

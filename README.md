@@ -19,6 +19,10 @@ And one carrying a support reference id, with its copy button:
 
 ![An error toast with a reference id](screenshots/reference_id.png)
 
+A subtitle and a reference id sit together, title on top:
+
+![An error toast with a subtitle and a reference id](screenshots/subtitle_and_reference.png)
+
 ## Install
 
 ```bash
@@ -29,7 +33,7 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ^1.0.0
+  toast_overlay: ^1.1.0
 ```
 
 then:
@@ -109,7 +113,7 @@ edge, and only the card nearest the edge keeps its `offset`.
 On an error you often want to hand the user something to quote to support. Pass
 a `referenceId` and the toast renders `Ref: <id>` with a copy button — and
 **stops auto-dismissing**, because a toast that vanishes while you are copying
-it is useless.
+it is useless. It sits under the `subtitle` when you pass both.
 
 ```dart
 Toast.show(
@@ -217,8 +221,9 @@ Toast.init(
 );
 ```
 
-The two labels are the accessibility labels on the close and copy buttons; both
-buttons have 48×48 tap targets.
+The two labels are the accessibility labels on the close and copy buttons. The
+close button keeps a 48×48 tap target — it is laid out over the card, so the
+room costs the toast no height.
 
 ## Without the global facade
 

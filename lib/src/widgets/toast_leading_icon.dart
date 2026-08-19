@@ -5,7 +5,7 @@ import '../toast_theme.dart';
 
 /// The status icon in its tinted tile.
 class ToastLeadingIcon extends StatelessWidget {
-  const ToastLeadingIcon({super.key, required this.status, this.size = 38});
+  const ToastLeadingIcon({super.key, required this.status, this.size = 32});
 
   final ToastStatus status;
   final double size;
@@ -23,12 +23,11 @@ class ToastLeadingIcon extends StatelessWidget {
       decoration: ShapeDecoration(
         color: colors.background,
         shape: theme.resolvedIconShape,
-        shadows: theme.shadows,
       ),
       child: Center(
         child: Icon(
           theme.icons.forStatus(status),
-          size: size * 0.63,
+          size: size * 0.6,
           color: colors.foreground,
           // The status is already conveyed by the title text, so the icon is
           // decorative for a screen reader.

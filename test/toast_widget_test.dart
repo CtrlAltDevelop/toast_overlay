@@ -140,6 +140,28 @@ void main() {
     await tester.pump();
   });
 
+  testWidgets('shows the subtitle and the reference id together',
+      (tester) async {
+    final controller = await _pumpApp(tester);
+
+    controller.show(
+      const ToastConfig(
+        status: ToastStatus.error,
+        title: 'Withdrawal failed',
+        subtitle: 'Your bank declined the transfer.',
+        referenceId: 'REF-123',
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Your bank declined the transfer.'), findsOneWidget);
+    expect(find.text('Ref: REF-123'), findsOneWidget);
+
+    controller.dismiss();
+    await tester.pump();
+  });
+
   testWidgets('the close button dismisses', (tester) async {
     final controller = await _pumpApp(tester);
 

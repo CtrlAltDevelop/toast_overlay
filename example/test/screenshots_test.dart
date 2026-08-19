@@ -98,7 +98,6 @@ void main() {
         _card(const ToastConfig(
           status: ToastStatus.error,
           title: 'Withdrawal failed',
-          subtitle: 'Please contact support.',
           referenceId: 'REF-8F42-9001',
           offset: 0,
         )),
@@ -108,6 +107,32 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('../../screenshots/reference_id.png'),
+    );
+  });
+
+  testWidgets('a title, a subtitle and a reference id', (tester) async {
+    tester.view
+      ..physicalSize = const Size(880, 380)
+      ..devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    await _pumpAndSettleImages(
+      tester,
+      _canvas([
+        _card(const ToastConfig(
+          status: ToastStatus.error,
+          title: 'Withdrawal failed',
+          subtitle: 'Your bank declined the transfer. No funds have left '
+              'your account.',
+          referenceId: 'REF-8F42-9001',
+          offset: 0,
+        )),
+      ]),
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('../../screenshots/subtitle_and_reference.png'),
     );
   });
 }

@@ -18,9 +18,10 @@ class ToastCloseButton extends StatelessWidget {
   final Animation<double>? timerAnimation;
 
   /// The visible circle is small by design, so the tap target is expanded to
-  /// the 48dp accessibility minimum instead.
+  /// the 48dp accessibility minimum instead. The card lays this button out on
+  /// top of its content, so the extra room costs the toast no height.
   static const double _minTapTarget = 48;
-  static const double _visualSize = 20;
+  static const double _visualSize = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class ToastCloseButton extends StatelessWidget {
 
     final icon = Icon(
       theme.icons.close,
-      size: animation != null ? 9.6 : 14,
+      size: animation != null ? 9 : 12,
       color: theme.closeIconColor,
     );
 
@@ -60,7 +61,7 @@ class ToastCloseButton extends StatelessWidget {
                         child: ToastTimerProgress(
                           value: animation,
                           color: theme.closeIconColor,
-                          size: 16,
+                          size: 14,
                           child: child!,
                         ),
                       ),

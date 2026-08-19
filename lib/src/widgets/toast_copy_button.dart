@@ -26,7 +26,10 @@ class ToastCopyButton extends StatefulWidget {
 }
 
 class _ToastCopyButtonState extends State<ToastCopyButton> {
-  static const double _minTapTarget = 48;
+  /// The ripple still reaches out to 48dp; only the laid-out box is this
+  /// small, so the button does not stretch the reference line.
+  static const double _tapTarget = 24;
+  static const double _inkRadius = 24;
 
   bool _copied = false;
   Timer? _resetTimer;
@@ -59,14 +62,14 @@ class _ToastCopyButtonState extends State<ToastCopyButton> {
       label: widget.semanticsLabel,
       child: InkResponse(
         onTap: _copy,
-        radius: _minTapTarget / 2,
+        radius: _inkRadius,
         child: SizedBox(
-          width: _minTapTarget,
-          height: _minTapTarget,
+          width: _tapTarget,
+          height: _tapTarget,
           child: Center(
             child: Icon(
               _copied ? theme.icons.copied : theme.icons.copy,
-              size: 14,
+              size: 13,
               color: _copied
                   ? theme.colorsFor(ToastStatus.success).foreground
                   : theme.subtitleColor,
