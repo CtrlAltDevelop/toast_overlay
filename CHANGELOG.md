@@ -1,5 +1,52 @@
 # Changelog
 
+## 1.2.0
+
+- **Actions.** A toast can carry a button — `action: ToastAction(label: 'Undo',
+  onPressed: restore)`. It dismisses the toast when pressed unless
+  `dismissOnPressed` is false. `ToastTheme.actionColor` and `actionStyle` paint
+  it.
+
+- **Tappable cards.** `onTap` makes the whole card a target, for a toast that
+  opens the thing it is about. The close and copy buttons still win the gesture
+  arena, so they keep working.
+
+- **Swipe to dismiss.** A drag towards the anchored edge — up at the top, down
+  at the bottom — throws the toast away past 40% of its height, or on a flick;
+  anything less springs back. Dragging the other way does nothing, so it never
+  fights a scroll underneath. `dismissible: false` opts out.
+
+- **The countdown pauses under a pointer.** Hovering a card stops the timer and
+  leaving resumes it from where it stopped, so a toast does not vanish
+  mid-sentence on desktop and web. `pauseOnHover: false` opts out.
+
+- **Dismiss one toast.** `show` now returns the toast's id, and
+  `dismissToast(id)` plays that one card's exit animation while the rest stay.
+  `dismissAll()` animates every toast out; `dismiss()` still cuts them
+  immediately.
+
+- **Announced to screen readers.** The title and subtitle are one live region,
+  and on platforms that support announcements the toast announces itself when
+  it appears — assertively for an error, politely otherwise. A toast in an
+  overlay was otherwise easy to miss before it auto-dismissed.
+
+- **The card no longer stretches across a desktop window.** It is capped at
+  `ToastTheme.maxWidth`, 520 by default, and centred.
+  `maxWidth: double.infinity` restores the previous full-width card.
+
+- A reference id now renders on any status. It used to be dropped on anything
+  but `error`, which was surprising given `referenceId` also disables
+  auto-dismiss whatever the status.
+
+- **Lower floor, looser constraints.** The package now asks for Dart 3.12 and
+  Flutter 3.44 — `material_ui`'s own minimum — instead of 3.13 / 3.47, and its
+  dependencies float over a range rather than one major line: `material_ui`
+  `>=1.0.0 <2.0.0`, `flutter_lints` `>=5.0.0 <7.0.0`. The test suite passes
+  against the lowest versions the range allows as well as the newest.
+
+- `ToastConfig.copyWith` covers every field. It only took `duration` and
+  `offset` before.
+
 ## 1.1.0
 
 - An error toast with both a `subtitle` and a `referenceId` now shows both,

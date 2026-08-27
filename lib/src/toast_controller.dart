@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart' show kToolbarHeight;
 import 'package:flutter/widgets.dart';
 
+import 'toast_action.dart';
 import 'toast_config.dart';
 import 'toast_enums.dart';
 import 'toast_history.dart';
@@ -63,6 +64,7 @@ class ToastController {
 
   OverlayEntry? _entry;
   final List<StackedToast> _stack = [];
+  final Set<Object> _dismissing = {};
   int _nextId = 0;
 
   /// Whether a toast is currently on screen.
@@ -79,7 +81,11 @@ class ToastController {
   ///
   /// A toast carrying a reference id never auto-dismisses: the user needs time
   /// to copy it, so only the close button removes it.
-  void show(ToastConfig config) {
+  ///
+  /// Returns the toast's id, which [dismissToast] takes to remove that one
+  /// toast. The id is still returned when no overlay was available and nothing
+  /// was shown; dismissing it is then a no-op.
+  Object show(ToastConfig config) {
     final effective =
         config.hasReferenceId ? config.copyWith(clearDuration: true) : config;
 
@@ -89,11 +95,12 @@ class ToastController {
     history.add(entry);
     logger?.call(entry);
 
+    final id = _nextId++;
     final overlay = overlayResolver();
-    if (overlay == null) return;
+    if (overlay == null) return id;
 
     if (maxStack == 1) _stack.clear();
-    _stack.add(StackedToast(id: _nextId++, config: effective));
+    _stack.add(StackedToast(id: id, config: effective));
     // Oldest first, so anything over the limit falls off the front.
     if (_stack.length > maxStack) {
       _stack.removeRange(0, _stack.length - maxStack);
@@ -107,10 +114,13 @@ class ToastController {
     } else {
       overlayEntry.markNeedsBuild();
     }
+
+    return id;
   }
 
   Widget _buildStack(BuildContext context) => ToastStack(
         toasts: List.unmodifiable(_stack),
+        dismissing: Set.unmodifiable(_dismissing),
         spacing: stackSpacing,
         strings: (context) => stringsBuilder?.call(context) ?? strings,
         onDismissed: _removeById,
@@ -118,6 +128,7 @@ class ToastController {
 
   void _removeById(Object id) {
     _stack.removeWhere((toast) => toast.id == id);
+    _dismissing.remove(id);
     if (_stack.isEmpty) {
       _remove();
     } else {
@@ -126,14 +137,18 @@ class ToastController {
   }
 
   /// Convenience wrapper around [show].
-  void showToast({
+  Object showToast({
     required ToastStatus status,
     required String title,
     String? subtitle,
     String? referenceId,
+    ToastAction? action,
+    VoidCallback? onTap,
     ToastPosition position = ToastPosition.top,
     double offset = kToolbarHeight,
     Duration? duration = const Duration(seconds: 3),
+    bool dismissible = true,
+    bool pauseOnHover = true,
   }) =>
       show(
         ToastConfig(
@@ -141,17 +156,39 @@ class ToastController {
           title: title,
           subtitle: subtitle,
           referenceId: referenceId,
+          action: action,
+          onTap: onTap,
           position: position,
           offset: offset,
           duration: duration,
+          dismissible: dismissible,
+          pauseOnHover: pauseOnHover,
         ),
       );
+
+  /// Plays the exit animation on the toast [show] returned [id] for, leaving
+  /// any others on screen. Unknown and already-dismissing ids are ignored.
+  void dismissToast(Object id) {
+    if (_dismissing.contains(id)) return;
+    if (!_stack.any((toast) => toast.id == id)) return;
+    _dismissing.add(id);
+    _entry?.markNeedsBuild();
+  }
+
+  /// Plays the exit animation on every toast on screen. Each card removes
+  /// itself once its animation finishes; use [dismiss] to cut them immediately.
+  void dismissAll() {
+    for (final toast in _stack.toList()) {
+      dismissToast(toast.id);
+    }
+  }
 
   /// Removes every toast on screen immediately, without the exit animation.
   void dismiss() => _remove();
 
   void _remove() {
     _stack.clear();
+    _dismissing.clear();
     _entry?.remove();
     _entry = null;
   }
@@ -212,24 +249,39 @@ abstract final class Toast {
   /// The most recent toasts, for a debug screen.
   static ToastHistory get history => instance.history;
 
-  static void show({
+  static Object show({
     required ToastStatus status,
     required String title,
     String? subtitle,
     String? referenceId,
+    ToastAction? action,
+    VoidCallback? onTap,
     ToastPosition position = ToastPosition.top,
     double offset = kToolbarHeight,
     Duration? duration = const Duration(seconds: 3),
+    bool dismissible = true,
+    bool pauseOnHover = true,
   }) =>
       instance.showToast(
         status: status,
         title: title,
         subtitle: subtitle,
         referenceId: referenceId,
+        action: action,
+        onTap: onTap,
         position: position,
         offset: offset,
         duration: duration,
+        dismissible: dismissible,
+        pauseOnHover: pauseOnHover,
       );
 
+  /// Plays the exit animation on the toast [show] returned [id] for.
+  static void dismissToast(Object id) => instance.dismissToast(id);
+
+  /// Plays the exit animation on every toast on screen.
+  static void dismissAll() => instance.dismissAll();
+
+  /// Removes every toast on screen immediately, without the exit animation.
   static void dismiss() => instance.dismiss();
 }

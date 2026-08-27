@@ -25,10 +25,14 @@ class ToastStack extends StatelessWidget {
     required this.toasts,
     required this.strings,
     required this.onDismissed,
+    this.dismissing = const {},
     this.spacing = 8,
   });
 
   final List<StackedToast> toasts;
+
+  /// Ids of the toasts that have been asked to play their exit animation.
+  final Set<Object> dismissing;
 
   /// Resolved against the toast's own context, so the strings follow the app's
   /// current locale.
@@ -70,6 +74,7 @@ class ToastStack extends StatelessWidget {
             config:
                 isNearestEdge ? toast.config : toast.config.copyWith(offset: 0),
             strings: strings(context),
+            dismissRequested: dismissing.contains(toast.id),
             onDismissed: () => onDismissed(toast.id),
           ),
         ),

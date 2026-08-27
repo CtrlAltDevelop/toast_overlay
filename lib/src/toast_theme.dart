@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:material_ui/material_ui.dart';
 
 import 'toast_enums.dart';
@@ -43,7 +45,10 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
     this.titleStyle,
     this.subtitleStyle,
     this.referenceStyle,
+    this.actionStyle,
+    this.actionColor,
     this.fontFamily,
+    this.maxWidth = 520,
     this.shadows = const [],
     this.cardRadius = const BorderRadius.all(Radius.circular(12)),
     this.iconRadius = const BorderRadius.all(Radius.circular(6)),
@@ -74,11 +79,23 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
   /// Style of the `Ref: <id>` line. Falls back to [subtitleStyle].
   final TextStyle? referenceStyle;
 
+  /// Style of the action button's label. Falls back to the title style at the
+  /// subtitle's size.
+  final TextStyle? actionStyle;
+
+  /// The action button's label and ripple colour. Falls back to [titleColor];
+  /// one colour for every status keeps the button legible on all four.
+  final Color? actionColor;
+
   /// Font family for every line of the toast, for hosts that only want to swap
   /// the typeface. A family set on one of the styles above wins over this.
   final String? fontFamily;
 
   final List<BoxShadow> shadows;
+
+  /// The widest the card is allowed to get, so a toast does not stretch across
+  /// a desktop window. [double.infinity] restores the pre-1.2 full-width card.
+  final double maxWidth;
 
   /// Corner radii of the toast card, per corner. Ignored when [cardShape] is
   /// set.
@@ -138,6 +155,16 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
     );
   }
 
+  /// The action label style, filled in from this theme where [actionStyle]
+  /// leaves things unset.
+  TextStyle resolvedActionStyle(TextTheme textTheme) {
+    final base = actionStyle ?? textTheme.labelLarge ?? const TextStyle();
+    return base.copyWith(
+      fontWeight: actionStyle?.fontWeight ?? FontWeight.w600,
+      fontFamily: actionStyle?.fontFamily ?? fontFamily ?? base.fontFamily,
+    );
+  }
+
   ToastStatusColors colorsFor(ToastStatus status) =>
       statusColors[status] ??
       ToastStatusColors(background: surface, foreground: titleColor);
@@ -193,7 +220,10 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
     TextStyle? referenceStyle,
+    TextStyle? actionStyle,
+    Color? actionColor,
     String? fontFamily,
+    double? maxWidth,
     List<BoxShadow>? shadows,
     BorderRadius? cardRadius,
     BorderRadius? iconRadius,
@@ -212,7 +242,10 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
         titleStyle: titleStyle ?? this.titleStyle,
         subtitleStyle: subtitleStyle ?? this.subtitleStyle,
         referenceStyle: referenceStyle ?? this.referenceStyle,
+        actionStyle: actionStyle ?? this.actionStyle,
+        actionColor: actionColor ?? this.actionColor,
         fontFamily: fontFamily ?? this.fontFamily,
+        maxWidth: maxWidth ?? this.maxWidth,
         shadows: shadows ?? this.shadows,
         cardRadius: cardRadius ?? this.cardRadius,
         iconRadius: iconRadius ?? this.iconRadius,
@@ -240,7 +273,10 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
       titleStyle: TextStyle.lerp(titleStyle, other.titleStyle, t),
       subtitleStyle: TextStyle.lerp(subtitleStyle, other.subtitleStyle, t),
       referenceStyle: TextStyle.lerp(referenceStyle, other.referenceStyle, t),
+      actionStyle: TextStyle.lerp(actionStyle, other.actionStyle, t),
+      actionColor: Color.lerp(actionColor, other.actionColor, t),
       fontFamily: t < 0.5 ? fontFamily : other.fontFamily,
+      maxWidth: lerpDouble(maxWidth, other.maxWidth, t) ?? maxWidth,
       shadows: BoxShadow.lerpList(shadows, other.shadows, t) ?? shadows,
       cardRadius:
           BorderRadius.lerp(cardRadius, other.cardRadius, t) ?? cardRadius,

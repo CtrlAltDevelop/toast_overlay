@@ -13,6 +13,7 @@
 /// ```
 library;
 
+export 'src/toast_action.dart';
 export 'src/toast_config.dart';
 export 'src/toast_controller.dart';
 export 'src/toast_enums.dart';

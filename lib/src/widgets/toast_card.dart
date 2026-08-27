@@ -16,6 +16,7 @@ class ToastCard extends StatelessWidget {
     required this.strings,
     required this.animation,
     required this.onDismiss,
+    this.onTap,
     this.timerAnimation,
     this.margin = const EdgeInsets.symmetric(horizontal: 26),
   });
@@ -25,6 +26,11 @@ class ToastCard extends StatelessWidget {
   final Animation<double> animation;
   final Animation<double>? timerAnimation;
   final VoidCallback onDismiss;
+
+  /// Called when the card body is tapped. Null leaves the body inert, so only
+  /// the close and copy buttons react to a tap.
+  final VoidCallback? onTap;
+
   final EdgeInsets margin;
 
   @override
@@ -32,54 +38,76 @@ class ToastCard extends StatelessWidget {
     final theme = ToastTheme.of(context);
     final isTop = config.position.isTop;
 
+    final Widget card = Container(
+      margin: margin.copyWith(
+        top: isTop ? config.offset : 0,
+        bottom: isTop ? 0 : config.offset,
+      ),
+      clipBehavior: Clip.antiAlias,
+      decoration: ShapeDecoration(
+        color: theme.surface,
+        shape: theme.resolvedCardShape,
+        shadows: theme.shadows,
+      ),
+      child: Stack(
+        children: [
+          if (theme.glowBuilder != null)
+            Positioned.fill(child: theme.glowBuilder!(context, config.status)),
+          Padding(
+            // The right inset keeps the text clear of the close button, which
+            // is laid out on top of the card rather than in this row.
+            padding: const EdgeInsets.fromLTRB(10, 10, 38, 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ToastLeadingIcon(status: config.status),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ToastContent(
+                    config: config,
+                    strings: strings,
+                    onActionPressed: onDismiss,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Overlaid, so its 48dp tap target costs the card no height.
+          Positioned(
+            top: 0,
+            right: 0,
+            child: ToastCloseButton(
+              timerAnimation: timerAnimation,
+              onDismiss: onDismiss,
+              semanticsLabel: strings.closeLabel,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // Wrapped rather than laid behind the content: the close and copy buttons
+    // are descendants, so they win the gesture arena and keep working.
+    final tappable = onTap == null
+        ? card
+        : GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onTap: onTap,
+            child: card,
+          );
+
     return AnimatedBuilder(
       animation: animation,
       // The card is passed as `child` so it is built once rather than on every
       // animation tick.
-      child: Container(
-        margin: margin.copyWith(
-          top: isTop ? config.offset : 0,
-          bottom: isTop ? 0 : config.offset,
-        ),
-        clipBehavior: Clip.antiAlias,
-        decoration: ShapeDecoration(
-          color: theme.surface,
-          shape: theme.resolvedCardShape,
-          shadows: theme.shadows,
-        ),
-        child: Stack(
-          children: [
-            if (theme.glowBuilder != null)
-              Positioned.fill(
-                  child: theme.glowBuilder!(context, config.status)),
-            Padding(
-              // The right inset keeps the text clear of the close button, which
-              // is laid out on top of the card rather than in this row.
-              padding: const EdgeInsets.fromLTRB(10, 10, 38, 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ToastLeadingIcon(status: config.status),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ToastContent(config: config, strings: strings),
-                  ),
-                ],
+      child: theme.maxWidth == double.infinity
+          ? tappable
+          : Align(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: theme.maxWidth),
+                child: tappable,
               ),
             ),
-            // Overlaid, so its 48dp tap target costs the card no height.
-            Positioned(
-              top: 0,
-              right: 0,
-              child: ToastCloseButton(
-                timerAnimation: timerAnimation,
-                onDismiss: onDismiss,
-                semanticsLabel: strings.closeLabel,
-              ),
-            ),
-          ],
-        ),
-      ),
       builder: (context, child) {
         final value = animation.value;
         return FadeTransition(

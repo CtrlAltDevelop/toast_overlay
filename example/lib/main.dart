@@ -59,6 +59,24 @@ class _HomePage extends StatelessWidget {
     );
   }
 
+  /// A toast with an action, and one whose card is itself tappable.
+  void _showUndoable() {
+    Toast.show(
+      status: ToastStatus.info,
+      title: 'Order cancelled',
+      subtitle: 'It can still be restored.',
+      duration: const Duration(seconds: 6),
+      action: ToastAction(
+        label: 'Undo',
+        onPressed: () => Toast.show(
+          status: ToastStatus.success,
+          title: 'Order restored',
+        ),
+      ),
+      onTap: () => debugPrint('card tapped'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,6 +124,11 @@ class _HomePage extends StatelessWidget {
                   subtitle: 'Orders placed now are queued until the open.',
                 ),
                 child: const Text('Info'),
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _showUndoable,
+                child: const Text('Info, with an Undo action'),
               ),
               const SizedBox(height: 12),
               FilledButton(

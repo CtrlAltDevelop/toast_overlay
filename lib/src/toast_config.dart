@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import 'toast_action.dart';
 import 'toast_enums.dart';
 
 /// An immutable description of one toast.
@@ -11,8 +12,12 @@ class ToastConfig {
     this.position = ToastPosition.top,
     this.subtitle,
     this.referenceId,
+    this.action,
+    this.onTap,
     this.offset = 0,
     this.duration = const Duration(seconds: 3),
+    this.dismissible = true,
+    this.pauseOnHover = true,
   });
 
   final ToastStatus status;
@@ -27,11 +32,25 @@ class ToastConfig {
   /// it to support. Hidden when null or empty.
   final String? referenceId;
 
+  /// An optional button — `Undo`, `Retry` — shown under the text.
+  final ToastAction? action;
+
+  /// Called when the card itself is tapped. The toast is dismissed after.
+  final VoidCallback? onTap;
+
   /// Distance from the anchored screen edge.
   final double offset;
 
   /// Auto-dismiss delay. Null keeps the toast up until dismissed manually.
   final Duration? duration;
+
+  /// Whether the toast can be flicked away towards its anchored edge.
+  final bool dismissible;
+
+  /// Whether hovering the card pauses the auto-dismiss countdown, so a toast
+  /// does not vanish out from under a pointer that is reading it. Desktop and
+  /// web only — a touch pointer never generates a hover.
+  final bool pauseOnHover;
 
   bool get hasReferenceId => referenceId != null && referenceId!.isNotEmpty;
   bool get hasSubtitle => subtitle != null && subtitle!.isNotEmpty;
@@ -40,18 +59,31 @@ class ToastConfig {
   bool get isAutoDismissing => duration != null;
 
   ToastConfig copyWith({
+    ToastStatus? status,
+    String? title,
+    ToastPosition? position,
+    String? subtitle,
+    String? referenceId,
+    ToastAction? action,
+    VoidCallback? onTap,
+    double? offset,
     Duration? duration,
     bool clearDuration = false,
-    double? offset,
+    bool? dismissible,
+    bool? pauseOnHover,
   }) =>
       ToastConfig(
-        status: status,
-        title: title,
-        position: position,
-        subtitle: subtitle,
-        referenceId: referenceId,
+        status: status ?? this.status,
+        title: title ?? this.title,
+        position: position ?? this.position,
+        subtitle: subtitle ?? this.subtitle,
+        referenceId: referenceId ?? this.referenceId,
+        action: action ?? this.action,
+        onTap: onTap ?? this.onTap,
         offset: offset ?? this.offset,
         duration: clearDuration ? null : (duration ?? this.duration),
+        dismissible: dismissible ?? this.dismissible,
+        pauseOnHover: pauseOnHover ?? this.pauseOnHover,
       );
 
   @override
@@ -62,8 +94,12 @@ class ToastConfig {
       other.position == position &&
       other.subtitle == subtitle &&
       other.referenceId == referenceId &&
+      other.action == action &&
+      other.onTap == onTap &&
       other.offset == offset &&
-      other.duration == duration;
+      other.duration == duration &&
+      other.dismissible == dismissible &&
+      other.pauseOnHover == pauseOnHover;
 
   @override
   int get hashCode => Object.hash(
@@ -72,8 +108,12 @@ class ToastConfig {
         position,
         subtitle,
         referenceId,
+        action,
+        onTap,
         offset,
         duration,
+        dismissible,
+        pauseOnHover,
       );
 
   @override

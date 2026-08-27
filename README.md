@@ -21,7 +21,7 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ^1.1.0
+  toast_overlay: ^1.2.0
 ```
 
 then:
@@ -45,6 +45,8 @@ dart fix --apply --code=migrate_design_widgets
 ```
 
 Staying on `package:flutter/material.dart` for now? Use `toast_overlay: ^0.3.0`.
+
+It needs Flutter 3.44 or newer (Dart 3.12), which is `material_ui`'s own floor.
 
 [material_ui]: https://pub.dev/packages/material_ui
 
@@ -76,9 +78,56 @@ Toast.show(
 | `title` | — | Falls back to the status default when empty |
 | `subtitle` | null | Secondary line, up to 3 lines |
 | `referenceId` | null | Shown with a copy button; **disables auto-dismiss** |
+| `action` | null | A `ToastAction` button under the text — `Undo`, `Retry` |
+| `onTap` | null | Called when the card body is tapped; dismisses after |
 | `position` | `top` | `top` or `bottom` |
 | `offset` | `kToolbarHeight` | Distance from the anchored edge |
 | `duration` | 3s | `null` keeps it up until dismissed |
+| `dismissible` | true | Whether a swipe towards the edge dismisses |
+| `pauseOnHover` | true | Whether a hovering pointer pauses the countdown |
+
+`Toast.show` returns the toast's id, which `Toast.dismissToast` takes to remove
+that one toast with its exit animation:
+
+```dart
+final id = Toast.show(status: ToastStatus.info, title: 'Uploading…', duration: null);
+await upload();
+Toast.dismissToast(id);
+```
+
+`Toast.dismissAll()` animates every toast out; `Toast.dismiss()` cuts them
+immediately, without the exit animation.
+
+## Actions and taps
+
+Give a toast a button, and the toast dismisses itself once it is pressed:
+
+```dart
+Toast.show(
+  status: ToastStatus.info,
+  title: 'Order cancelled',
+  action: ToastAction(
+    label: 'Undo',                 // supply it already localised
+    onPressed: restoreOrder,
+    dismissOnPressed: true,        // false keeps the toast up
+  ),
+);
+```
+
+`onTap` makes the whole card tappable — for a toast that opens the thing it is
+about. The close and copy buttons keep working; they win the gesture arena.
+
+## Dismissing
+
+Beyond the close button, a toast is dismissed by a swipe towards its anchored
+edge — up for a top toast, down for a bottom one. A drag past 40% of the card's
+height, or a flick, sends it away; anything less springs back. Dragging the
+other way does nothing, so it never fights a scroll underneath. Set
+`dismissible: false` to pin a toast to the close button alone.
+
+On desktop and web a pointer resting on the card pauses the countdown and
+resumes it on the way out, so a toast does not vanish mid-sentence. A touch
+pointer never hovers, so `pauseOnHover` costs nothing on mobile.
 
 ## Stacking
 
@@ -98,10 +147,12 @@ edge, and only the card nearest the edge keeps its `offset`.
 
 ## Reference ids
 
-On an error you often want to hand the user something to quote to support. Pass
+When something fails you often want to hand the user something to quote to
+support. Pass
 a `referenceId` and the toast renders `Ref: <id>` with a copy button — and
 **stops auto-dismissing**, because a toast that vanishes while you are copying
-it is useless. It sits under the `subtitle` when you pass both.
+it is useless. It sits under the `subtitle` when you pass both, and works on
+any status, not only `error`.
 
 ```dart
 Toast.show(
@@ -177,8 +228,9 @@ ToastTheme(
 
 ### Everything else
 
-`ToastTheme` also carries `shadows`, `icons`, and a `glowBuilder` for painting a
-decorative backdrop behind the card:
+`ToastTheme` also carries `shadows`, `icons`, `maxWidth`, the action button's
+`actionColor` and `actionStyle`, and a `glowBuilder` for painting a decorative
+backdrop behind the card:
 
 ```dart
 glowBuilder: (context, status) => DecoratedBox(
@@ -257,10 +309,24 @@ for (final entry in Toast.history.entries) {
 }
 ```
 
+## Accessibility
+
+- The title and subtitle are one live region, so a screen reader reads them as
+  a unit. On platforms that support announcements the toast is also announced
+  when it appears — assertively for an error, politely otherwise — because a
+  toast in an overlay is otherwise easy to miss before it auto-dismisses.
+- The close and copy buttons are laid out small but keep a 48dp tap target, and
+  carry the labels from `ToastStrings`.
+- The swipe is excluded from semantics: the close button is the accessible way
+  out, and a drag handler would merge the card into one unusable node.
+
 ## Behaviour notes
 
 - Showing a toast replaces any toast already on screen, unless `maxStack` is
   above 1.
+- The card is capped at `ToastTheme.maxWidth` (520 by default) and centred, so
+  it does not stretch across a desktop window. `double.infinity` restores the
+  full-width card.
 - The countdown ring is only drawn while a toast is auto-dismissing.
 - The card is wrapped in a `RepaintBoundary` and passed as the `child` of its
   `AnimatedBuilder`, so the animation does not rebuild the content.
