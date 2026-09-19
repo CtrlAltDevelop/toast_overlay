@@ -26,7 +26,7 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ">=1.2.1 <2.0.0"
+  toast_overlay: ">=1.2.0 <2.0.0"
   material_ui: ">=1.0.0 <2.0.0"
 ```
 

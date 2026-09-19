@@ -1,17 +1,5 @@
 # Changelog
 
-## 1.2.1
-
-- No change to the published code. CI moved to the shared reusable workflow in
-  CtrlAltDevelop/ci-workflows: formatting, `analyze --fatal-infos`, the tests,
-  the example, a changelog entry per version, and a pana score with no points
-  lost — the same gate across every package here.
-- Dependency bounds are explicit ranges rather than carets — a floor that
-  resolves on the supported SDK, the next major as the ceiling — so a consumer
-  already on an older version in the same major is not forced to move.
-- The README carries the pub, pub points, CI and licence badges the other
-  packages here carry.
-
 ## 1.2.0
 
 - **Actions.** A toast can carry a button — `action: ToastAction(label: 'Undo',
@@ -58,6 +46,16 @@
 
 - `ToastConfig.copyWith` covers every field. It only took `duration` and
   `offset` before.
+
+- No change to the published code. CI moved to the shared reusable workflow in
+  CtrlAltDevelop/ci-workflows: formatting, `analyze --fatal-infos`, the tests,
+  the example, a changelog entry per version, and a pana score with no points
+  lost — the same gate across every package here.
+- Dependency bounds are explicit ranges rather than carets — a floor that
+  resolves on the supported SDK, the next major as the ceiling — so a consumer
+  already on an older version in the same major is not forced to move.
+- The README carries the pub, pub points, CI and licence badges the other
+  packages here carry.
 
 ## 1.1.0
 
