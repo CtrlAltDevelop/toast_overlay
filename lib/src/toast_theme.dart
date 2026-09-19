@@ -204,7 +204,10 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
       },
       shadows: const [
         BoxShadow(
-            color: Color(0x1A000000), blurRadius: 16, offset: Offset(0, 4)),
+          color: Color(0x1A000000),
+          blurRadius: 16,
+          offset: Offset(0, 4),
+        ),
       ],
     );
   }
@@ -231,29 +234,28 @@ class ToastTheme extends ThemeExtension<ToastTheme> {
     ShapeBorder? iconShape,
     ToastIcons? icons,
     Widget Function(BuildContext, ToastStatus)? glowBuilder,
-  }) =>
-      ToastTheme(
-        surface: surface ?? this.surface,
-        borderColor: borderColor ?? this.borderColor,
-        titleColor: titleColor ?? this.titleColor,
-        subtitleColor: subtitleColor ?? this.subtitleColor,
-        closeIconColor: closeIconColor ?? this.closeIconColor,
-        statusColors: statusColors ?? this.statusColors,
-        titleStyle: titleStyle ?? this.titleStyle,
-        subtitleStyle: subtitleStyle ?? this.subtitleStyle,
-        referenceStyle: referenceStyle ?? this.referenceStyle,
-        actionStyle: actionStyle ?? this.actionStyle,
-        actionColor: actionColor ?? this.actionColor,
-        fontFamily: fontFamily ?? this.fontFamily,
-        maxWidth: maxWidth ?? this.maxWidth,
-        shadows: shadows ?? this.shadows,
-        cardRadius: cardRadius ?? this.cardRadius,
-        iconRadius: iconRadius ?? this.iconRadius,
-        cardShape: cardShape ?? this.cardShape,
-        iconShape: iconShape ?? this.iconShape,
-        icons: icons ?? this.icons,
-        glowBuilder: glowBuilder ?? this.glowBuilder,
-      );
+  }) => ToastTheme(
+    surface: surface ?? this.surface,
+    borderColor: borderColor ?? this.borderColor,
+    titleColor: titleColor ?? this.titleColor,
+    subtitleColor: subtitleColor ?? this.subtitleColor,
+    closeIconColor: closeIconColor ?? this.closeIconColor,
+    statusColors: statusColors ?? this.statusColors,
+    titleStyle: titleStyle ?? this.titleStyle,
+    subtitleStyle: subtitleStyle ?? this.subtitleStyle,
+    referenceStyle: referenceStyle ?? this.referenceStyle,
+    actionStyle: actionStyle ?? this.actionStyle,
+    actionColor: actionColor ?? this.actionColor,
+    fontFamily: fontFamily ?? this.fontFamily,
+    maxWidth: maxWidth ?? this.maxWidth,
+    shadows: shadows ?? this.shadows,
+    cardRadius: cardRadius ?? this.cardRadius,
+    iconRadius: iconRadius ?? this.iconRadius,
+    cardShape: cardShape ?? this.cardShape,
+    iconShape: iconShape ?? this.iconShape,
+    icons: icons ?? this.icons,
+    glowBuilder: glowBuilder ?? this.glowBuilder,
+  );
 
   @override
   ToastTheme lerp(ToastTheme? other, double t) {
@@ -312,9 +314,9 @@ class ToastIcons {
   final IconData copied;
 
   IconData forStatus(ToastStatus status) => switch (status) {
-        ToastStatus.error => error,
-        ToastStatus.success => success,
-        ToastStatus.info => info,
-        ToastStatus.warning => warning,
-      };
+    ToastStatus.error => error,
+    ToastStatus.success => success,
+    ToastStatus.info => info,
+    ToastStatus.warning => warning,
+  };
 }

@@ -36,9 +36,9 @@ class ToastStrings {
 
   /// The fallback title for [status].
   String defaultTitle(ToastStatus status) => switch (status) {
-        ToastStatus.error => error,
-        ToastStatus.success => success,
-        ToastStatus.info => info,
-        ToastStatus.warning => warning,
-      };
+    ToastStatus.error => error,
+    ToastStatus.success => success,
+    ToastStatus.info => info,
+    ToastStatus.warning => warning,
+  };
 }

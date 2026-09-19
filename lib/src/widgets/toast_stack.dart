@@ -71,8 +71,9 @@ class ToastStack extends StatelessWidget {
         Builder(
           key: ValueKey(toast.id),
           builder: (context) => ToastOverlayEntry.stacked(
-            config:
-                isNearestEdge ? toast.config : toast.config.copyWith(offset: 0),
+            config: isNearestEdge
+                ? toast.config
+                : toast.config.copyWith(offset: 0),
             strings: strings(context),
             dismissRequested: dismissing.contains(toast.id),
             onDismissed: () => onDismissed(toast.id),
@@ -91,10 +92,7 @@ class ToastStack extends StatelessWidget {
         child: SafeArea(
           top: isTop,
           bottom: !isTop,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: cards,
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: cards),
         ),
       ),
     );

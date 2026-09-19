@@ -242,11 +242,7 @@ class _ToastOverlayEntryState extends State<ToastOverlayEntry>
       right: 0,
       child: Material(
         color: Colors.transparent,
-        child: SafeArea(
-          top: isTop,
-          bottom: !isTop,
-          child: card,
-        ),
+        child: SafeArea(top: isTop, bottom: !isTop, child: card),
       ),
     );
   }

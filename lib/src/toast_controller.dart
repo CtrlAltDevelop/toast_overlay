@@ -21,8 +21,8 @@ class ToastController {
     this.maxStack = 1,
     this.stackSpacing = 8,
     ToastHistory? history,
-  })  : assert(maxStack >= 1, 'maxStack must be at least 1'),
-        history = history ?? ToastHistory();
+  }) : assert(maxStack >= 1, 'maxStack must be at least 1'),
+       history = history ?? ToastHistory();
 
   /// Resolves the overlay to insert into. Returning null makes [show] a no-op,
   /// which is what you want when no route is mounted yet.
@@ -86,10 +86,12 @@ class ToastController {
   /// toast. The id is still returned when no overlay was available and nothing
   /// was shown; dismissing it is then a no-op.
   Object show(ToastConfig config) {
-    final effective =
-        config.hasReferenceId ? config.copyWith(clearDuration: true) : config;
+    final effective = config.hasReferenceId
+        ? config.copyWith(clearDuration: true)
+        : config;
 
-    final entry = '${ToastHistory.timestamp()} '
+    final entry =
+        '${ToastHistory.timestamp()} '
         '[${effective.status.shortName}] ${effective.title}'
         '${effective.hasSubtitle ? ' — ${effective.subtitle}' : ''}';
     history.add(entry);
@@ -119,12 +121,12 @@ class ToastController {
   }
 
   Widget _buildStack(BuildContext context) => ToastStack(
-        toasts: List.unmodifiable(_stack),
-        dismissing: Set.unmodifiable(_dismissing),
-        spacing: stackSpacing,
-        strings: (context) => stringsBuilder?.call(context) ?? strings,
-        onDismissed: _removeById,
-      );
+    toasts: List.unmodifiable(_stack),
+    dismissing: Set.unmodifiable(_dismissing),
+    spacing: stackSpacing,
+    strings: (context) => stringsBuilder?.call(context) ?? strings,
+    onDismissed: _removeById,
+  );
 
   void _removeById(Object id) {
     _stack.removeWhere((toast) => toast.id == id);
@@ -149,22 +151,21 @@ class ToastController {
     Duration? duration = const Duration(seconds: 3),
     bool dismissible = true,
     bool pauseOnHover = true,
-  }) =>
-      show(
-        ToastConfig(
-          status: status,
-          title: title,
-          subtitle: subtitle,
-          referenceId: referenceId,
-          action: action,
-          onTap: onTap,
-          position: position,
-          offset: offset,
-          duration: duration,
-          dismissible: dismissible,
-          pauseOnHover: pauseOnHover,
-        ),
-      );
+  }) => show(
+    ToastConfig(
+      status: status,
+      title: title,
+      subtitle: subtitle,
+      referenceId: referenceId,
+      action: action,
+      onTap: onTap,
+      position: position,
+      offset: offset,
+      duration: duration,
+      dismissible: dismissible,
+      pauseOnHover: pauseOnHover,
+    ),
+  );
 
   /// Plays the exit animation on the toast [show] returned [id] for, leaving
   /// any others on screen. Unknown and already-dismissing ids are ignored.
@@ -261,20 +262,19 @@ abstract final class Toast {
     Duration? duration = const Duration(seconds: 3),
     bool dismissible = true,
     bool pauseOnHover = true,
-  }) =>
-      instance.showToast(
-        status: status,
-        title: title,
-        subtitle: subtitle,
-        referenceId: referenceId,
-        action: action,
-        onTap: onTap,
-        position: position,
-        offset: offset,
-        duration: duration,
-        dismissible: dismissible,
-        pauseOnHover: pauseOnHover,
-      );
+  }) => instance.showToast(
+    status: status,
+    title: title,
+    subtitle: subtitle,
+    referenceId: referenceId,
+    action: action,
+    onTap: onTap,
+    position: position,
+    offset: offset,
+    duration: duration,
+    dismissible: dismissible,
+    pauseOnHover: pauseOnHover,
+  );
 
   /// Plays the exit animation on the toast [show] returned [id] for.
   static void dismissToast(Object id) => instance.dismissToast(id);

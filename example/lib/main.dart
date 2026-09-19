@@ -68,10 +68,8 @@ class _HomePage extends StatelessWidget {
       duration: const Duration(seconds: 6),
       action: ToastAction(
         label: 'Undo',
-        onPressed: () => Toast.show(
-          status: ToastStatus.success,
-          title: 'Order restored',
-        ),
+        onPressed: () =>
+            Toast.show(status: ToastStatus.success, title: 'Order restored'),
       ),
       onTap: () => debugPrint('card tapped'),
     );

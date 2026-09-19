@@ -14,11 +14,11 @@ import 'package:toast_overlay_example/example_toast_theme.dart';
 
 /// A card, laid out exactly as the overlay lays it out, on a plain backdrop.
 Widget _card(ToastConfig config) => ToastCard(
-      config: config,
-      strings: const ToastStrings(),
-      animation: const AlwaysStoppedAnimation(1),
-      onDismiss: _noop,
-    );
+  config: config,
+  strings: const ToastStrings(),
+  animation: const AlwaysStoppedAnimation(1),
+  onDismiss: _noop,
+);
 
 void _noop() {}
 
@@ -26,29 +26,28 @@ Widget _canvas(
   List<Widget> cards, {
   Alignment alignment = Alignment.center,
   double spacing = 8,
-}) =>
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B5BFF)),
-        extensions: const [exampleToastTheme],
+}) => MaterialApp(
+  debugShowCheckedModeBanner: false,
+  theme: ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B5BFF)),
+    extensions: const [exampleToastTheme],
+  ),
+  home: Scaffold(
+    backgroundColor: const Color(0xFFFFFFFF),
+    body: Align(
+      alignment: alignment,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < cards.length; i++) ...[
+            if (i > 0) SizedBox(height: spacing),
+            cards[i],
+          ],
+        ],
       ),
-      home: Scaffold(
-        backgroundColor: const Color(0xFFFFFFFF),
-        body: Align(
-          alignment: alignment,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < cards.length; i++) ...[
-                if (i > 0) SizedBox(height: spacing),
-                cards[i],
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
+    ),
+  ),
+);
 
 Future<void> _pump(WidgetTester tester, Widget widget) async {
   await tester.pumpWidget(widget);
@@ -66,24 +65,29 @@ Future<void> _loadFonts() async {
   Future<void> load(String family, String path) async {
     final file = File(path);
     if (!file.existsSync()) return;
-    await (FontLoader(family)
-          ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer))))
-        .load();
+    await (FontLoader(
+      family,
+    )..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)))).load();
   }
 
   await load('Roboto', '$materialFonts/Roboto-Regular.ttf');
   await load('MaterialIcons', '$materialFonts/MaterialIcons-Regular.otf');
 
-  final remix = Directory('${Platform.environment['HOME']}'
-          '/.pub-cache/hosted/pub.dev')
-      .listSync()
-      .whereType<Directory>()
-      .where((d) => d.path.split('/').last.startsWith('remixicon-'))
-      .toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  final remix =
+      Directory(
+            '${Platform.environment['HOME']}'
+            '/.pub-cache/hosted/pub.dev',
+          )
+          .listSync()
+          .whereType<Directory>()
+          .where((d) => d.path.split('/').last.startsWith('remixicon-'))
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
   if (remix.isNotEmpty) {
     await load(
-        'packages/remixicon/remix', '${remix.last.path}/fonts/remix.ttf');
+      'packages/remixicon/remix',
+      '${remix.last.path}/fonts/remix.ttf',
+    );
   }
 }
 
@@ -116,31 +120,34 @@ void main() {
       tester,
       'stacked',
       const Size(440, 250),
-      _canvas(
-        alignment: Alignment.topCenter,
-        [
-          // Only the card nearest the edge keeps its offset, exactly as
-          // ToastStack lays them out.
-          _card(const ToastConfig(
+      _canvas(alignment: Alignment.topCenter, [
+        // Only the card nearest the edge keeps its offset, exactly as
+        // ToastStack lays them out.
+        _card(
+          const ToastConfig(
             status: ToastStatus.info,
             title: 'Syncing your positions',
             subtitle: 'This takes a moment on a slow connection.',
             offset: 24,
-          )),
-          _card(const ToastConfig(
+          ),
+        ),
+        _card(
+          const ToastConfig(
             status: ToastStatus.warning,
             title: 'Low margin',
             subtitle: 'Consider closing some positions.',
             offset: 0,
-          )),
-          _card(const ToastConfig(
+          ),
+        ),
+        _card(
+          const ToastConfig(
             status: ToastStatus.success,
             title: 'Positions synced',
             subtitle: 'Everything is up to date.',
             offset: 0,
-          )),
-        ],
-      ),
+          ),
+        ),
+      ]),
     );
   });
 
@@ -149,18 +156,17 @@ void main() {
       tester,
       'bottom',
       const Size(440, 160),
-      _canvas(
-        alignment: Alignment.bottomCenter,
-        [
-          _card(const ToastConfig(
+      _canvas(alignment: Alignment.bottomCenter, [
+        _card(
+          const ToastConfig(
             status: ToastStatus.warning,
             title: 'Low margin',
             subtitle: 'Consider closing some positions.',
             position: ToastPosition.bottom,
             offset: 24,
-          )),
-        ],
-      ),
+          ),
+        ),
+      ]),
     );
   });
 
@@ -170,12 +176,14 @@ void main() {
       'reference_id',
       const Size(440, 130),
       _canvas([
-        _card(const ToastConfig(
-          status: ToastStatus.error,
-          title: 'Withdrawal failed',
-          referenceId: 'REF-8F42-9001',
-          offset: 0,
-        )),
+        _card(
+          const ToastConfig(
+            status: ToastStatus.error,
+            title: 'Withdrawal failed',
+            referenceId: 'REF-8F42-9001',
+            offset: 0,
+          ),
+        ),
       ]),
     );
   });
@@ -186,14 +194,17 @@ void main() {
       'subtitle_and_reference',
       const Size(440, 130),
       _canvas([
-        _card(const ToastConfig(
-          status: ToastStatus.error,
-          title: 'Withdrawal failed',
-          subtitle: 'Your bank declined the transfer. No funds have left '
-              'your account.',
-          referenceId: 'REF-8F42-9001',
-          offset: 0,
-        )),
+        _card(
+          const ToastConfig(
+            status: ToastStatus.error,
+            title: 'Withdrawal failed',
+            subtitle:
+                'Your bank declined the transfer. No funds have left '
+                'your account.',
+            referenceId: 'REF-8F42-9001',
+            offset: 0,
+          ),
+        ),
       ]),
     );
   });

@@ -4,7 +4,7 @@ publish_to: none
 version: 1.0.0
 
 environment:
-  sdk: ">=3.12.0 <4.0.0"
+  sdk: ^3.12.0
   flutter: ">=3.44.0"
 
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
     path: ../
   # The package itself defaults to Material Icons and has no icon dependency;
   # the example overrides ToastTheme.icons to show Remix Icons instead.
-  remixicon: ^4.9.3
+  remixicon: ">=4.9.3 <5.0.0"
   material_ui: ">=1.0.0 <2.0.0"
 
 dev_dependencies:

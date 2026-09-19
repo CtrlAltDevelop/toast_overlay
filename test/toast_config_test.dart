@@ -29,8 +29,11 @@ void main() {
 
     expect(withSubtitle.hasSubtitle, isTrue);
     expect(
-      const ToastConfig(status: ToastStatus.info, title: 'x', subtitle: '')
-          .hasSubtitle,
+      const ToastConfig(
+        status: ToastStatus.info,
+        title: 'x',
+        subtitle: '',
+      ).hasSubtitle,
       isFalse,
     );
   });

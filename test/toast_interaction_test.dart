@@ -6,7 +6,10 @@ import 'package:toast_overlay/toast_overlay.dart';
 
 /// Pumps an app whose navigator key the controller resolves against, and
 /// returns the controller.
-Future<ToastController> _pumpApp(WidgetTester tester, {int maxStack = 1}) async {
+Future<ToastController> _pumpApp(
+  WidgetTester tester, {
+  int maxStack = 1,
+}) async {
   final navigatorKey = GlobalKey<NavigatorState>();
 
   await tester.pumpWidget(
@@ -227,11 +230,7 @@ void main() {
 
       for (final title in ['A', 'B']) {
         controller.show(
-          ToastConfig(
-            status: ToastStatus.info,
-            title: title,
-            duration: null,
-          ),
+          ToastConfig(status: ToastStatus.info, title: title, duration: null),
         );
       }
       await _settleIn(tester);
@@ -245,8 +244,9 @@ void main() {
   });
 
   group('auto-dismiss', () {
-    testWidgets('a hover pauses the countdown and leaving resumes it',
-        (tester) async {
+    testWidgets('a hover pauses the countdown and leaving resumes it', (
+      tester,
+    ) async {
       final controller = await _pumpApp(tester);
 
       controller.show(
@@ -259,7 +259,9 @@ void main() {
       await _settleIn(tester);
 
       final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
-      await pointer.addPointer(location: tester.getCenter(find.text('Hover me')));
+      await pointer.addPointer(
+        location: tester.getCenter(find.text('Hover me')),
+      );
       addTearDown(pointer.removePointer);
       await tester.pump();
 
@@ -274,8 +276,9 @@ void main() {
       expect(find.text('Hover me'), findsNothing);
     });
 
-    testWidgets('a toast with a reference id never auto-dismisses',
-        (tester) async {
+    testWidgets('a toast with a reference id never auto-dismisses', (
+      tester,
+    ) async {
       final controller = await _pumpApp(tester);
 
       controller.show(
@@ -295,8 +298,9 @@ void main() {
     });
   });
 
-  testWidgets('the reference id shows on any status, not just errors',
-      (tester) async {
+  testWidgets('the reference id shows on any status, not just errors', (
+    tester,
+  ) async {
     final controller = await _pumpApp(tester);
 
     controller.show(

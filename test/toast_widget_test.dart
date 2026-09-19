@@ -19,8 +19,9 @@ Future<ToastController> _pumpApp(
     MaterialApp(
       navigatorKey: navigatorKey,
       theme: ThemeData(
-        extensions:
-            toastTheme == null ? const <ThemeExtension>[] : [toastTheme],
+        extensions: toastTheme == null
+            ? const <ThemeExtension>[]
+            : [toastTheme],
       ),
       home: const Scaffold(body: SizedBox.expand()),
     ),
@@ -62,9 +63,7 @@ void main() {
       strings: const ToastStrings(warning: 'Heads up'),
     );
 
-    controller.show(
-      const ToastConfig(status: ToastStatus.warning, title: ''),
-    );
+    controller.show(const ToastConfig(status: ToastStatus.warning, title: ''));
     await tester.pump();
 
     expect(find.text('Heads up'), findsOneWidget);
@@ -73,8 +72,9 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('stringsBuilder resolves against the toast context',
-      (tester) async {
+  testWidgets('stringsBuilder resolves against the toast context', (
+    tester,
+  ) async {
     final controller = await _pumpApp(
       tester,
       strings: const ToastStrings(warning: 'static'),
@@ -140,8 +140,9 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('shows the subtitle and the reference id together',
-      (tester) async {
+  testWidgets('shows the subtitle and the reference id together', (
+    tester,
+  ) async {
     final controller = await _pumpApp(tester);
 
     controller.show(
@@ -214,20 +215,25 @@ void main() {
   });
 
   group('stacking', () {
-    testWidgets('keeps both toasts on screen when maxStack allows it',
-        (tester) async {
+    testWidgets('keeps both toasts on screen when maxStack allows it', (
+      tester,
+    ) async {
       final controller = await _pumpApp(tester, maxStack: 3);
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'First',
-        duration: null,
-      ));
-      controller.show(const ToastConfig(
-        status: ToastStatus.success,
-        title: 'Second',
-        duration: null,
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'First',
+          duration: null,
+        ),
+      );
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.success,
+          title: 'Second',
+          duration: null,
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
@@ -243,11 +249,9 @@ void main() {
       final controller = await _pumpApp(tester, maxStack: 2);
 
       for (final title in ['First', 'Second', 'Third']) {
-        controller.show(ToastConfig(
-          status: ToastStatus.info,
-          title: title,
-          duration: null,
-        ));
+        controller.show(
+          ToastConfig(status: ToastStatus.info, title: title, duration: null),
+        );
       }
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -264,18 +268,22 @@ void main() {
     testWidgets('the toast nearest the edge keeps its offset', (tester) async {
       final controller = await _pumpApp(tester, maxStack: 2);
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'First',
-        offset: 40,
-        duration: null,
-      ));
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'Second',
-        offset: 40,
-        duration: null,
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'First',
+          offset: 40,
+          duration: null,
+        ),
+      );
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Second',
+          offset: 40,
+          duration: null,
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
@@ -295,16 +303,20 @@ void main() {
     testWidgets('closing one stacked toast leaves the other', (tester) async {
       final controller = await _pumpApp(tester, maxStack: 2);
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'First',
-        duration: null,
-      ));
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'Second',
-        duration: null,
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'First',
+          duration: null,
+        ),
+      );
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Second',
+          duration: null,
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
@@ -321,8 +333,9 @@ void main() {
   });
 
   group('theme', () {
-    testWidgets('cardRadius and iconRadius drive the default shapes',
-        (tester) async {
+    testWidgets('cardRadius and iconRadius drive the default shapes', (
+      tester,
+    ) async {
       const theme = ToastTheme(
         surface: Color(0xFFFFFFFF),
         borderColor: Color(0xFFEEEEEE),
@@ -362,26 +375,33 @@ void main() {
         ),
       );
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'Styled',
-        subtitle: 'Also styled',
-        duration: null,
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Styled',
+          subtitle: 'Also styled',
+          duration: null,
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(tester.widget<Text>(find.text('Styled')).style?.fontFamily,
-          'Georgia');
-      expect(tester.widget<Text>(find.text('Also styled')).style?.fontFamily,
-          'Georgia');
+      expect(
+        tester.widget<Text>(find.text('Styled')).style?.fontFamily,
+        'Georgia',
+      );
+      expect(
+        tester.widget<Text>(find.text('Also styled')).style?.fontFamily,
+        'Georgia',
+      );
 
       controller.dismiss();
       await tester.pump();
     });
 
-    testWidgets('titleStyle keeps the weight and colour it sets',
-        (tester) async {
+    testWidgets('titleStyle keeps the weight and colour it sets', (
+      tester,
+    ) async {
       final controller = await _pumpApp(
         tester,
         toastTheme: const ToastTheme(
@@ -399,11 +419,13 @@ void main() {
         ),
       );
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.info,
-        title: 'Light title',
-        duration: null,
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Light title',
+          duration: null,
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
@@ -430,11 +452,13 @@ void main() {
         ),
       );
 
-      controller.show(const ToastConfig(
-        status: ToastStatus.error,
-        title: 'Failed',
-        referenceId: 'REF-7',
-      ));
+      controller.show(
+        const ToastConfig(
+          status: ToastStatus.error,
+          title: 'Failed',
+          referenceId: 'REF-7',
+        ),
+      );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
@@ -556,11 +580,7 @@ void main() {
       final controller = await _pumpApp(tester);
       Toast.initWith(controller);
 
-      Toast.show(
-        status: ToastStatus.success,
-        title: 'Global',
-        duration: null,
-      );
+      Toast.show(status: ToastStatus.success, title: 'Global', duration: null);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 

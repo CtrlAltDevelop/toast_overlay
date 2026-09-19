@@ -8,15 +8,15 @@ enum ToastPosition {
   /// The vertical distance the toast travels while animating in. Negative for
   /// [top] so it slides down into place, positive for [bottom] so it slides up.
   double get entranceYOffset => switch (this) {
-        ToastPosition.top => -20,
-        ToastPosition.bottom => 20,
-      };
+    ToastPosition.top => -20,
+    ToastPosition.bottom => 20,
+  };
 
   /// A stable label for logging and tests.
   String get shortName => switch (this) {
-        ToastPosition.top => 'top',
-        ToastPosition.bottom => 'bottom',
-      };
+    ToastPosition.top => 'top',
+    ToastPosition.bottom => 'bottom',
+  };
 }
 
 /// The severity of a toast, which selects its colours, icon and default title.
@@ -28,9 +28,9 @@ enum ToastStatus {
 
   /// A stable label for logging and tests.
   String get shortName => switch (this) {
-        ToastStatus.error => 'error',
-        ToastStatus.success => 'success',
-        ToastStatus.info => 'info',
-        ToastStatus.warning => 'warning',
-      };
+    ToastStatus.error => 'error',
+    ToastStatus.success => 'success',
+    ToastStatus.info => 'info',
+    ToastStatus.warning => 'warning',
+  };
 }

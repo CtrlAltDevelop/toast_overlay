@@ -65,17 +65,11 @@ class ToastContent extends StatelessWidget {
         ),
         if (showReference) ...[
           const SizedBox(height: 2),
-          ToastReferenceRow(
-            referenceId: config.referenceId!,
-            strings: strings,
-          ),
+          ToastReferenceRow(referenceId: config.referenceId!, strings: strings),
         ],
         if (action != null) ...[
           const SizedBox(height: 4),
-          ToastActionButton(
-            action: action,
-            onPressed: onActionPressed,
-          ),
+          ToastActionButton(action: action, onPressed: onActionPressed),
         ],
       ],
     );
@@ -166,10 +160,7 @@ class ToastActionButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           foregroundColor: theme.actionColor ?? theme.titleColor,
         ),
-        child: Text(
-          action.label,
-          style: theme.resolvedActionStyle(textTheme),
-        ),
+        child: Text(action.label, style: theme.resolvedActionStyle(textTheme)),
       ),
     );
   }

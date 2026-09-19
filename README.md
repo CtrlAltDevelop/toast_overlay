@@ -1,5 +1,10 @@
 # toast_overlay
 
+[![pub package](https://img.shields.io/pub/v/toast_overlay.svg)](https://pub.dev/packages/toast_overlay)
+[![pub points](https://img.shields.io/pub/points/toast_overlay)](https://pub.dev/packages/toast_overlay/score)
+[![CI](https://github.com/CtrlAltDevelop/toast_overlay/actions/workflows/ci.yml/badge.svg)](https://github.com/CtrlAltDevelop/toast_overlay/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/CtrlAltDevelop/toast_overlay/blob/main/LICENSE)
+
 An animated, themeable overlay toast for Flutter — with an auto-dismiss
 countdown ring, and an optional support **reference id** the user can copy.
 
@@ -21,7 +26,8 @@ Or add it to `pubspec.yaml` yourself — it is a runtime dependency:
 
 ```yaml
 dependencies:
-  toast_overlay: ^1.2.0
+  toast_overlay: ">=1.2.1 <2.0.0"
+  material_ui: ">=1.0.0 <2.0.0"
 ```
 
 then:
@@ -46,7 +52,8 @@ dart fix --apply --code=migrate_design_widgets
 
 Staying on `package:flutter/material.dart` for now? Use `toast_overlay: ^0.3.0`.
 
-It needs Flutter 3.44 or newer (Dart 3.12), which is `material_ui`'s own floor.
+It needs Flutter 3.44.0 or newer (Dart 3.12.0), which is `material_ui`'s own
+floor.
 
 [material_ui]: https://pub.dev/packages/material_ui
 

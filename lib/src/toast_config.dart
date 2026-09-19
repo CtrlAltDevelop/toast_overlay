@@ -71,20 +71,19 @@ class ToastConfig {
     bool clearDuration = false,
     bool? dismissible,
     bool? pauseOnHover,
-  }) =>
-      ToastConfig(
-        status: status ?? this.status,
-        title: title ?? this.title,
-        position: position ?? this.position,
-        subtitle: subtitle ?? this.subtitle,
-        referenceId: referenceId ?? this.referenceId,
-        action: action ?? this.action,
-        onTap: onTap ?? this.onTap,
-        offset: offset ?? this.offset,
-        duration: clearDuration ? null : (duration ?? this.duration),
-        dismissible: dismissible ?? this.dismissible,
-        pauseOnHover: pauseOnHover ?? this.pauseOnHover,
-      );
+  }) => ToastConfig(
+    status: status ?? this.status,
+    title: title ?? this.title,
+    position: position ?? this.position,
+    subtitle: subtitle ?? this.subtitle,
+    referenceId: referenceId ?? this.referenceId,
+    action: action ?? this.action,
+    onTap: onTap ?? this.onTap,
+    offset: offset ?? this.offset,
+    duration: clearDuration ? null : (duration ?? this.duration),
+    dismissible: dismissible ?? this.dismissible,
+    pauseOnHover: pauseOnHover ?? this.pauseOnHover,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -103,20 +102,21 @@ class ToastConfig {
 
   @override
   int get hashCode => Object.hash(
-        status,
-        title,
-        position,
-        subtitle,
-        referenceId,
-        action,
-        onTap,
-        offset,
-        duration,
-        dismissible,
-        pauseOnHover,
-      );
+    status,
+    title,
+    position,
+    subtitle,
+    referenceId,
+    action,
+    onTap,
+    offset,
+    duration,
+    dismissible,
+    pauseOnHover,
+  );
 
   @override
-  String toString() => 'ToastConfig(${status.shortName}, "$title"'
+  String toString() =>
+      'ToastConfig(${status.shortName}, "$title"'
       '${subtitle == null ? '' : ', "$subtitle"'})';
 }
