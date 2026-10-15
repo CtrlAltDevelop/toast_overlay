@@ -214,6 +214,50 @@ void main() {
     await tester.pump();
   });
 
+  testWidgets('a progress value draws a determinate progress bar', (
+    tester,
+  ) async {
+    final controller = await _pumpApp(tester);
+
+    controller.show(
+      const ToastConfig(
+        status: ToastStatus.info,
+        title: 'Uploading…',
+        duration: null,
+        progress: 0.4,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final bar = tester.widget<LinearProgressIndicator>(
+      find.byType(LinearProgressIndicator),
+    );
+    expect(bar.value, 0.4);
+
+    controller.dismiss();
+    await tester.pump();
+  });
+
+  testWidgets('no progress value draws no progress bar', (tester) async {
+    final controller = await _pumpApp(tester);
+
+    controller.show(
+      const ToastConfig(
+        status: ToastStatus.info,
+        title: 'Plain',
+        duration: null,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+
+    controller.dismiss();
+    await tester.pump();
+  });
+
   group('stacking', () {
     testWidgets('keeps both toasts on screen when maxStack allows it', (
       tester,

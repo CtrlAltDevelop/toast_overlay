@@ -82,6 +82,16 @@ class ToastCard extends StatelessWidget {
               semanticsLabel: strings.closeLabel,
             ),
           ),
+          if (config.hasProgress)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _ToastProgressBar(
+                value: config.progress!,
+                color: theme.colorsFor(config.status).foreground,
+              ),
+            ),
         ],
       ),
     );
@@ -109,15 +119,49 @@ class ToastCard extends StatelessWidget {
               ),
             ),
       builder: (context, child) {
+        // Eased separately from the linear `animation` driving the slide and
+        // fade: a little overshoot reads as a toast arriving, not just fading
+        // into place.
         final value = animation.value;
+        final scale = Curves.easeOutBack.transform(value);
         return FadeTransition(
           opacity: animation,
           child: Transform.translate(
             offset: Offset(0, (1 - value) * config.position.entranceYOffset),
-            child: child,
+            child: Transform.scale(
+              scale: 0.92 + 0.08 * scale,
+              child: child,
+            ),
           ),
         );
       },
+    );
+  }
+}
+
+/// The thin determinate bar drawn along the bottom edge for
+/// [ToastConfig.progress].
+class _ToastProgressBar extends StatelessWidget {
+  const _ToastProgressBar({required this.value, required this.color});
+
+  final double value;
+  final Color color;
+
+  static const double _height = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _height,
+      child: Semantics(
+        value: '${(value * 100).round()}%',
+        child: LinearProgressIndicator(
+          value: value,
+          minHeight: _height,
+          color: color,
+          backgroundColor: color.withValues(alpha: 0.15),
+        ),
+      ),
     );
   }
 }

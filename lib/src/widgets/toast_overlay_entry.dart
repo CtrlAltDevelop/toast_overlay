@@ -225,7 +225,20 @@ class _ToastOverlayEntryState extends State<ToastOverlayEntry>
             ),
             duration: _dragging ? Duration.zero : widget.transitionDuration,
             curve: Curves.easeOut,
-            child: card,
+            // Fades out over the same travel that triggers a dismiss, so
+            // letting go partway through already looks like it is on its way
+            // out rather than snapping away at the threshold.
+            child: AnimatedOpacity(
+              opacity: _cardHeight > 0
+                  ? 1 - (_dragExtent / _cardHeight / _dismissFraction).clamp(
+                      0.0,
+                      1.0,
+                    )
+                  : 1,
+              duration: _dragging ? Duration.zero : widget.transitionDuration,
+              curve: Curves.easeOut,
+              child: card,
+            ),
           ),
         ),
       );

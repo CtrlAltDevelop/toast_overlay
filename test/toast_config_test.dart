@@ -45,6 +45,34 @@ void main() {
     expect(config.copyWith(clearDuration: true).isAutoDismissing, isFalse);
   });
 
+  group('progress', () {
+    test('hasProgress is only true when set', () {
+      const config = ToastConfig(status: ToastStatus.info, title: 'x');
+      expect(config.hasProgress, isFalse);
+      expect(config.copyWith(progress: 0.4).hasProgress, isTrue);
+    });
+
+    test('rejects a value outside 0 to 1', () {
+      expect(
+        () => ToastConfig(status: ToastStatus.info, title: 'x', progress: 1.4),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    test('clearProgress removes it even when progress is also passed', () {
+      const config = ToastConfig(
+        status: ToastStatus.info,
+        title: 'x',
+        progress: 0.4,
+      );
+
+      expect(
+        config.copyWith(clearProgress: true).hasProgress,
+        isFalse,
+      );
+    });
+  });
+
   test('compares by value', () {
     const a = ToastConfig(status: ToastStatus.info, title: 'x');
     const b = ToastConfig(status: ToastStatus.info, title: 'x');

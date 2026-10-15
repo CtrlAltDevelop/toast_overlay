@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Determinate progress.** `ToastConfig.progress` (0 to 1) draws a thin bar
+  along the bottom of the card — `'Uploading…'` at 0.4, pushed towards 1 with
+  `updateToast` as the real work reports in. `copyWith(clearProgress: true)`
+  removes it.
+- **A little more life on entry and swipe.** The entrance animation now eases
+  in with a slight overshoot instead of a flat fade, and dragging a card
+  towards its edge fades it out over the same distance that would dismiss it,
+  instead of staying fully opaque until the threshold.
 - **Fixed a leak.** `dismissToast` on a toast that was then pushed off the
   stack by `maxStack`, or replaced by the next `show()` when `maxStack` is 1,
   never ran its exit animation to completion, so its id stayed in an internal

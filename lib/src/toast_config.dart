@@ -18,7 +18,11 @@ class ToastConfig {
     this.duration = const Duration(seconds: 3),
     this.dismissible = true,
     this.pauseOnHover = true,
-  });
+    this.progress,
+  }) : assert(
+         progress == null || (progress >= 0 && progress <= 1),
+         'progress must be between 0 and 1',
+       );
 
   final ToastStatus status;
 
@@ -52,6 +56,13 @@ class ToastConfig {
   /// web only — a touch pointer never generates a hover.
   final bool pauseOnHover;
 
+  /// Determinate progress, 0 to 1, drawn as a thin bar under the content —
+  /// `'Uploading…'` at 0.4, pushed towards 1 with [ToastController.updateToast]
+  /// as the real work reports in. Null (the default) draws no bar.
+  final double? progress;
+
+  bool get hasProgress => progress != null;
+
   bool get hasReferenceId => referenceId != null && referenceId!.isNotEmpty;
   bool get hasSubtitle => subtitle != null && subtitle!.isNotEmpty;
 
@@ -71,6 +82,8 @@ class ToastConfig {
     bool clearDuration = false,
     bool? dismissible,
     bool? pauseOnHover,
+    double? progress,
+    bool clearProgress = false,
   }) => ToastConfig(
     status: status ?? this.status,
     title: title ?? this.title,
@@ -83,6 +96,7 @@ class ToastConfig {
     duration: clearDuration ? null : (duration ?? this.duration),
     dismissible: dismissible ?? this.dismissible,
     pauseOnHover: pauseOnHover ?? this.pauseOnHover,
+    progress: clearProgress ? null : (progress ?? this.progress),
   );
 
   @override
@@ -98,7 +112,8 @@ class ToastConfig {
       other.offset == offset &&
       other.duration == duration &&
       other.dismissible == dismissible &&
-      other.pauseOnHover == pauseOnHover;
+      other.pauseOnHover == pauseOnHover &&
+      other.progress == progress;
 
   @override
   int get hashCode => Object.hash(
@@ -113,6 +128,7 @@ class ToastConfig {
     duration,
     dismissible,
     pauseOnHover,
+    progress,
   );
 
   @override
