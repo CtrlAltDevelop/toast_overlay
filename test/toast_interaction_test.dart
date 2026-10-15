@@ -241,6 +241,84 @@ void main() {
       expect(controller.visibleCount, 0);
       expect(controller.isShowing, isFalse);
     });
+
+    testWidgets(
+      'a toast replaced mid-exit-animation does not block the next one',
+      (tester) async {
+        final controller = await _pumpApp(tester);
+
+        final first = controller.show(
+          const ToastConfig(
+            status: ToastStatus.info,
+            title: 'First',
+            duration: null,
+          ),
+        );
+        await _settleIn(tester);
+
+        // Requested but never finished: the replacement below clears it from
+        // the stack before its exit animation completes.
+        controller.dismissToast(first);
+
+        final second = controller.show(
+          const ToastConfig(
+            status: ToastStatus.info,
+            title: 'Second',
+            duration: null,
+          ),
+        );
+        await _settleIn(tester);
+
+        expect(find.text('Second'), findsOneWidget);
+
+        controller.dismissToast(second);
+        await tester.pumpAndSettle();
+
+        expect(controller.visibleCount, 0);
+      },
+    );
+  });
+
+  group('updateToast', () {
+    testWidgets('replaces the content of an on-screen toast', (tester) async {
+      final controller = await _pumpApp(tester);
+
+      final id = controller.show(
+        const ToastConfig(
+          status: ToastStatus.info,
+          title: 'Uploading…',
+          duration: null,
+        ),
+      );
+      await _settleIn(tester);
+
+      expect(find.text('Uploading…'), findsOneWidget);
+
+      final updated = controller.updateToast(
+        id,
+        const ToastConfig(
+          status: ToastStatus.success,
+          title: 'Uploaded',
+          duration: null,
+        ),
+      );
+      await tester.pump();
+
+      expect(updated, isTrue);
+      expect(find.text('Uploading…'), findsNothing);
+      expect(find.text('Uploaded'), findsOneWidget);
+    });
+
+    testWidgets('returns false for an unknown id', (tester) async {
+      final controller = await _pumpApp(tester);
+
+      final updated = controller.updateToast(
+        'nope',
+        const ToastConfig(status: ToastStatus.info, title: 'x'),
+      );
+
+      expect(updated, isFalse);
+    });
   });
 
   group('auto-dismiss', () {

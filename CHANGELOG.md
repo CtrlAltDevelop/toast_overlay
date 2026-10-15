@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- **Fixed a leak.** `dismissToast` on a toast that was then pushed off the
+  stack by `maxStack`, or replaced by the next `show()` when `maxStack` is 1,
+  never ran its exit animation to completion, so its id stayed in an internal
+  set forever. Long-lived apps that show and dismiss toasts rapidly would grow
+  that set without bound.
+- **Update a toast in place.** `updateToast(id, config)` (and
+  `Toast.updateToast`) replaces the content of an on-screen toast without
+  restarting its entrance animation or auto-dismiss timer — for a toast that
+  reports progress, e.g. `'Uploading…'` becoming `'Uploaded'`, instead of
+  stacking a second toast.
+- Added a `Publish` workflow: tagging a release (`vX.Y.Z` on `main`, matching
+  `pubspec.yaml` and with a `CHANGELOG.md` entry) now publishes to pub.dev
+  automatically via GitHub Actions' OIDC token, no stored credentials needed.
+
 ## 1.2.1
 
 - No change to the published code. CI moved to the shared reusable workflow in

@@ -107,6 +107,9 @@ class ToastController {
     if (_stack.length > maxStack) {
       _stack.removeRange(0, _stack.length - maxStack);
     }
+    // A toast dropped above never finishes its exit animation, so its id
+    // would otherwise sit in `_dismissing` forever.
+    _dismissing.removeWhere((id) => !_stack.any((toast) => toast.id == id));
 
     final overlayEntry = _entry;
     if (overlayEntry == null) {
@@ -166,6 +169,21 @@ class ToastController {
       pauseOnHover: pauseOnHover,
     ),
   );
+
+  /// Replaces the content of the on-screen toast [id] with [config], without
+  /// restarting its entrance animation or auto-dismiss timer.
+  ///
+  /// Useful for a toast that reports progress — `'Uploading…'` becoming
+  /// `'Uploaded'` in place rather than stacking a second toast. Returns false
+  /// if [id] is not currently showing (already dismissed, or never shown
+  /// because no overlay was available).
+  bool updateToast(Object id, ToastConfig config) {
+    final index = _stack.indexWhere((toast) => toast.id == id);
+    if (index == -1) return false;
+    _stack[index] = StackedToast(id: id, config: config);
+    _entry?.markNeedsBuild();
+    return true;
+  }
 
   /// Plays the exit animation on the toast [show] returned [id] for, leaving
   /// any others on screen. Unknown and already-dismissing ids are ignored.
@@ -275,6 +293,10 @@ abstract final class Toast {
     dismissible: dismissible,
     pauseOnHover: pauseOnHover,
   );
+
+  /// Replaces the content of the on-screen toast [id] with [config] in place.
+  static bool updateToast(Object id, ToastConfig config) =>
+      instance.updateToast(id, config);
 
   /// Plays the exit animation on the toast [show] returned [id] for.
   static void dismissToast(Object id) => instance.dismissToast(id);
