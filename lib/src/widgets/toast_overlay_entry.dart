@@ -230,10 +230,11 @@ class _ToastOverlayEntryState extends State<ToastOverlayEntry>
             // out rather than snapping away at the threshold.
             child: AnimatedOpacity(
               opacity: _cardHeight > 0
-                  ? 1 - (_dragExtent / _cardHeight / _dismissFraction).clamp(
-                      0.0,
-                      1.0,
-                    )
+                  ? 1 -
+                        (_dragExtent / _cardHeight / _dismissFraction).clamp(
+                          0.0,
+                          1.0,
+                        )
                   : 1,
               duration: _dragging ? Duration.zero : widget.transitionDuration,
               curve: Curves.easeOut,

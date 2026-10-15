@@ -66,10 +66,7 @@ void main() {
         progress: 0.4,
       );
 
-      expect(
-        config.copyWith(clearProgress: true).hasProgress,
-        isFalse,
-      );
+      expect(config.copyWith(clearProgress: true).hasProgress, isFalse);
     });
   });
 

@@ -128,10 +128,7 @@ class ToastCard extends StatelessWidget {
           opacity: animation,
           child: Transform.translate(
             offset: Offset(0, (1 - value) * config.position.entranceYOffset),
-            child: Transform.scale(
-              scale: 0.92 + 0.08 * scale,
-              child: child,
-            ),
+            child: Transform.scale(scale: 0.92 + 0.08 * scale, child: child),
           ),
         );
       },
