@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0
 
 - **Determinate progress.** `ToastConfig.progress` (0 to 1) draws a thin bar
   along the bottom of the card — `'Uploading…'` at 0.4, pushed towards 1 with
