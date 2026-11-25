@@ -4,6 +4,7 @@
 [![pub points](https://img.shields.io/pub/points/toast_overlay)](https://pub.dev/packages/toast_overlay/score)
 [![CI](https://github.com/CtrlAltDevelop/toast_overlay/actions/workflows/ci.yml/badge.svg)](https://github.com/CtrlAltDevelop/toast_overlay/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/CtrlAltDevelop/toast_overlay/blob/main/LICENSE)
+[![live demo](https://img.shields.io/badge/demo-live-brightgreen)](https://ctrlaltdevelop.github.io/toast_overlay/)
 
 An animated, themeable overlay toast for Flutter — with an auto-dismiss
 countdown ring, and an optional support **reference id** the user can copy.
